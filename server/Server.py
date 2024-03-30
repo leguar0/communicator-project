@@ -1,13 +1,14 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
+import random
 import requests
 
 ##test 
 
 
 app = FastAPI()
-users = {}
-unread_messages = {}
+users = []
+unread_messages = []
 
 class User(BaseModel):
     id: int
@@ -42,5 +43,3 @@ async def register_user(user : User):
 @app.post("/send_message")
 def send_message(message: Message):
     pass
-
-
