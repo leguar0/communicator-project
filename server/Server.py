@@ -34,8 +34,10 @@ def get_unread_messages():
     pass
 
 @app.post("/register_user")
-def register_user(name: str, surname: str):
-    pass
+async def register_user(user : User):
+    user.id = random.randint(1, 9999999) # temporary usage of random library
+    users.append(user)
+    return user
 
 @app.post("/send_message")
 def send_message(message: Message):
