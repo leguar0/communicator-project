@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from pydantic import BaseModel
 import random
 import requests
+from datetime import datetime
 import os
 import sqlite3
 
@@ -39,7 +40,7 @@ class Message(BaseModel):
     id_sender: int
     id_reciver: int
     message: str
-    data: str
+    datetime: datetime | None = None
     is_read: bool
 
 @app.get("/current_users")
