@@ -48,7 +48,7 @@ def current_users():
     return users
 
 @app.get("/unread_messages_from_user/{id_user}")
-def get_unread_messages_from_user(id_user):
+async def get_unread_messages_from_user(cur_id_user, id_user):
     pass
 
 @app.get("/unread_messages")
