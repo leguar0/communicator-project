@@ -13,7 +13,7 @@ def new_database_operations(cursor):
                  id_sender INT NOT NULL,
                  id_reciver INT NOT NULL,
                  message TEXT NOT NULL,
-                 datetime DATETIME NOT NULL,
+                 date_time DATETIME NOT NULL,
                  is_read BOOLEAN NOT NULL
         );''')
 
@@ -40,7 +40,7 @@ class Message(BaseModel):
     id_sender: int
     id_reciver: int
     message: str
-    datetime: datetime | None = None
+    date_time: datetime | None = None
     #is_read: bool
 
 @app.get("/current_users")
@@ -53,7 +53,7 @@ async def get_unread_messages_from_user(cur_id_user, id_user):
 
 @app.get("/unread_messages")
 async def get_unread_messages(id_user):
-    res = cur.execute('SELECT message, datetime FROM messages WHERE id_reciver = ? AND is_read = 0', [id_user])
+    res = cur.execute('SELECT message, date_time FROM messages WHERE id_reciver = ? AND is_read = 0', [id_user])
     fetch = res.fetchall()
     if(len(fetch) > 0):
         cur.execute('UPDATE messages SET is_read = 1 WHERE id_reciver = ? AND is_read = 0', [id_user])
