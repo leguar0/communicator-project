@@ -41,7 +41,7 @@ class Message(BaseModel):
     id_reciver: int
     message: str
     datetime: datetime | None = None
-    is_read: bool
+    #is_read: bool
 
 @app.get("/current_users")
 def current_users():
