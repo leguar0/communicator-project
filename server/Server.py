@@ -2,8 +2,28 @@ from fastapi import FastAPI
 from pydantic import BaseModel
 import random
 import requests
+import os
+import sqlite3
 
-##test 
+def new_database_operations(cursor):
+    cursor.execute('''CREATE TABLE messages
+        (
+                 id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                 id_sender INT NOT NULL,
+                 id_reciver INT NOT NULL,
+                 message TEXT NOT NULL,
+                 datetime DATETIME NOT NULL,
+                 is_read BOOLEAN NOT NULL
+        );''')
+
+database_name = 'server/communicator.db'
+database_existed = os.path.isfile(database_name)
+
+conn = sqlite3.connect(database_name)
+cur = conn.cursor()
+
+if not database_existed:
+    new_database_operations(cur)
 
 
 app = FastAPI()
