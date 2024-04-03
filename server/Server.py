@@ -67,5 +67,6 @@ async def register_user(user : User):
     return user
 
 @app.post("/send_message")
-def send_message(message: Message):
-    pass
+async def send_message(m: Message):
+    cur.execute('INSERT INTO messages VALUES(NULL,?,?,?,?,False)', (m.id_sender, m.id_reciver, m.message, datetime.now()))
+    conn.commit()
