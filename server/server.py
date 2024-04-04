@@ -1,7 +1,6 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
 import random
-import requests
 from datetime import datetime
 import os
 import sqlite3
