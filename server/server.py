@@ -43,7 +43,7 @@ class Message(BaseModel):
     #is_read: bool
 
 @app.get("/current_users")
-def current_users():
+async def current_users():
     return users
 
 @app.get("/unread_messages_from_user/{id_user}")
