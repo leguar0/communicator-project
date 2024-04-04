@@ -52,7 +52,7 @@ async def get_unread_messages_from_user(cur_id_user, id_user):
 
 @app.get("/unread_messages")
 async def get_unread_messages(id_user):
-    res = cur.execute('SELECT message, date_time FROM messages WHERE id_reciver = ? AND is_read = 0', [id_user])
+    res = cur.execute('SELECT message, date_time, id_sender FROM messages WHERE id_reciver = ? AND is_read = 0', [id_user])
     fetch = res.fetchall()
     if(len(fetch) > 0):
         cur.execute('UPDATE messages SET is_read = 1 WHERE id_reciver = ? AND is_read = 0', [id_user])
