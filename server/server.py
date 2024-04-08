@@ -12,7 +12,8 @@ def new_database_operations(cursor):
             id INTEGER PRIMARY KEY NOT NULL,
             name TEXT NOT NULL,
             surname TEXT NOT NULL
-        );
+        );''')
+    cursor.execute('''
         CREATE TABLE IF NOT EXISTS messages
         (
             id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
@@ -33,7 +34,7 @@ if not database_existed:
     new_database_operations(cur)
     
 app = FastAPI()
-users = []
+#users = []
 unread_messages = []
 
 class User(BaseModel):
