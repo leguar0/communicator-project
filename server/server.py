@@ -69,6 +69,12 @@ async def current_users():
 async def get_unread_messages_from_user(cur_id_user, id_user):
     pass
 
+@app.get("/count_unread_messages_from_user")
+async def get_count_unread_messages_from_user(id_sender, id_reciver):
+    cur.execute('SELECT id_sender,name,COUNT(*) as total_messages FROM messages INNER JOIN users ON users.id_user = messages.id_sender WHERE id_sender = ? AND id_reciver = ? AND is_read = 0', (id_sender, id_reciver))
+    fetch = cur.fetchall()
+    return fetch
+
 @app.get("/unread_messages")
 async def get_unread_messages(id_user):
     res = cur.execute('SELECT message, date_time, id_sender FROM messages WHERE id_reciver = ? AND is_read = 0', [id_user])

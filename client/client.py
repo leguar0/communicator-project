@@ -28,18 +28,21 @@ if id_reciver != 0:
 
 
 url = f'http://127.0.0.1:8000/unread_messages?id_user={cur_user_id}'
+url2 = f'http://127.0.0.1:8000/count_unread_messages_from_user?id_sender={id_reciver}&id_reciver={cur_user_id}'
 try:
     while True:
+        response = requests.get(url2)
+        res = response.json()
+        if len(res) > 0:
+            for result in res:
+                id_sender = result[0]
+                name_sender = result[1]
+                total_message = result[2]
+                print(f"ID_SENDER: {id_sender}, NAME_SENDER: {name_sender}, COUNT: {total_message}")
         response = requests.get(url)
-        if response.status_code == 200:
-            try:
-                res = response.json()
-                if len(res) > 0:
-                    print(res)
-            except ValueError:
-                print("Response is not in JSON format.")
-        else:
-            print("Error:", response.status_code)
+        res = response.json()
+        if len(res) > 0:
+            print(res)
         time.sleep(2)
 except KeyboardInterrupt:
     pass
