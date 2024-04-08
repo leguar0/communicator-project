@@ -77,10 +77,11 @@ async def get_unread_messages(id_user):
 
 @app.post("/register_user")
 async def register_user(user : User):
-    user.id = random.randint(1, 100) # temporary usage of random library
-    #cur.execute('INSERT INTO users VALUES(?,?,?)', (user.id,user.name, user.surname))
-    #conn.commit()
-    users.append(user)
+    #user.id = random.randint(1, 100) # temporary usage of random library
+    cur.execute('INSERT INTO users VALUES(?,?,?)', (user.id,user.name, user.surname))
+    conn.commit()
+    #users.append(user)
+    user.id = cur.lastrowid
     return user
 
 @app.post("/send_message")
