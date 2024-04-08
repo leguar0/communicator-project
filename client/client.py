@@ -30,9 +30,16 @@ if id_reciver != 0:
 url = f'http://127.0.0.1:8000/unread_messages?id_user={cur_user_id}'
 try:
     while True:
-        res = requests.get(url).json()
-        if(len(res) > 0):
-            print(res)
+        response = requests.get(url)
+        if response.status_code == 200:
+            try:
+                res = response.json()
+                if len(res) > 0:
+                    print(res)
+            except ValueError:
+                print("Response is not in JSON format.")
+        else:
+            print("Error:", response.status_code)
         time.sleep(2)
 except KeyboardInterrupt:
     pass
