@@ -9,19 +9,21 @@ def new_database_operations(cursor):
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS users
         (
-            id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+            id_user INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
             name TEXT NOT NULL,
             surname TEXT NOT NULL
         );''')
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS messages
         (
-            id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+            id_message INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
             id_sender INT NOT NULL,
             id_reciver INT NOT NULL,
             message TEXT NOT NULL,
             date_time DATETIME NOT NULL,
-            is_read BOOLEAN NOT NULL
+            is_read BOOLEAN NOT NULL,
+            FOREIGN KEY (id_sender) REFERENCES users(id_user),
+            FOREIGN KEY (id_reciver) REFERENCES users(id_user)       
         );''')
 
 database_name = 'server/communicator.db'
