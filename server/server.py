@@ -9,7 +9,7 @@ def new_database_operations(cursor):
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS users
         (
-            id INTEGER PRIMARY KEY NOT NULL,
+            id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
             name TEXT NOT NULL,
             surname TEXT NOT NULL
         );''')
@@ -79,7 +79,7 @@ async def get_unread_messages(id_user):
 @app.post("/register_user")
 async def register_user(user : User):
     #user.id = random.randint(1, 100) # temporary usage of random library
-    cur.execute('INSERT INTO users VALUES(?,?,?)', (user.id,user.name, user.surname))
+    cur.execute('INSERT INTO users VALUES(NULL,?,?)', (user.name, user.surname))
     conn.commit()
     #users.append(user)
     user.id = cur.lastrowid
