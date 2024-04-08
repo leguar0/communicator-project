@@ -14,7 +14,7 @@ def new_database_operations(cursor):
                  message TEXT NOT NULL,
                  date_time DATETIME NOT NULL,
                  is_read BOOLEAN NOT NULL
-        );''')
+        )''')
 
 database_name = 'server/communicator.db'
 database_existed = os.path.isfile(database_name)
