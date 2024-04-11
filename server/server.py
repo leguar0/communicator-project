@@ -25,7 +25,7 @@ def new_database_operations(cursor):
             FOREIGN KEY (id_sender) REFERENCES users(id_user),
             FOREIGN KEY (id_reciver) REFERENCES users(id_user)       
         );''')
-
+    
 database_name = 'server/communicator.db'
 database_existed = os.path.isfile(database_name)
 
