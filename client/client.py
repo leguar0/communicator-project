@@ -21,14 +21,14 @@ print("Current users:")
 print(requests.get(url).json())
 
 message = input("Message:")
-id_reciver = int(input("to user: "))
-if id_reciver != 0:
+id_receiver = int(input("to user: "))
+if id_receiver != 0:
     url = f'http://127.0.0.1:8000/send_message'
-    requests.post(url, json = {"id_sender":cur_user_id, "id_reciver":id_reciver,"message":message})
+    requests.post(url, json = {"id_sender":cur_user_id, "id_reciver":id_receiver,"message":message})
 
 
 url = f'http://127.0.0.1:8000/unread_messages?id_user={cur_user_id}'
-url2 = f'http://127.0.0.1:8000/count_unread_messages_from_user?id_sender={id_reciver}&id_reciver={cur_user_id}'
+url2 = f'http://127.0.0.1:8000/count_unread_messages_from_user?id_sender={id_receiver}&id_receiver={cur_user_id}'
 try:
     while True:
         response = requests.get(url2)
@@ -38,11 +38,13 @@ try:
                 id_sender = result[0]
                 name_sender = result[1]
                 total_message = result[2]
-                print(f"ID_SENDER: {id_sender}, NAME_SENDER: {name_sender}, COUNT: {total_message}")
-        response = requests.get(url)
-        res = response.json()
-        if len(res) > 0:
-            print(res)
+                if name_sender != None:
+                    print(f"ID_SENDER: {id_sender}, NAME_SENDER: {name_sender}, COUNT: {total_message}")     
+            response = requests.get(url)
+            res = response.json()
+            if len(res) > 0:
+                print(res)
+            time.sleep(2)
         time.sleep(2)
 except KeyboardInterrupt:
     pass
