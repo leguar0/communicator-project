@@ -40,7 +40,7 @@ def check_unread_messages():
         messagebox.showinfo("Nieprzeczytane wiadomosci", f"Masz {len(unread_messages)} nieprzeczytanych wiadomosci")
 
 root = tk.Tk()
-root.title("Messenger")
+root.title("Komunikator")
 
 window_width = 800
 window_height = 600
