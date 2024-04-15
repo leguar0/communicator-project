@@ -105,14 +105,14 @@ async def register_user(user : User):
         return {"registration": False}
 
 @app.post("/login")
-async def login_user(user : User):
-    cur.execute('SELECT * FROM users WHERE username = ?', [user.username])
+async def login_user(username, password):
+    cur.execute('SELECT * FROM users WHERE username = ?', [username])
     result = cur.fetchone()
     if result:
-        cur.execute('SELECT * FROM users WHERE username = ? AND password = ?', (user.username, user.password))
+        cur.execute('SELECT * FROM users WHERE username = ? AND password = ?', (username, password))
         result = cur.fetchone()
         if result:
-            return {"authenticated": True}
+            return result
     return {"authenticated": False}
 
 @app.post("/send_message")
