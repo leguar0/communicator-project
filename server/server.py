@@ -91,7 +91,7 @@ async def get_unread_messages(id_user):
         conn.commit()
     return fetch
 
-@app.post("/register_user")
+@app.get("/register_user")
 async def register_user(user : User):
     #user.id = random.randint(1, 100) # temporary usage of random library
     cur.execute('SELECT * FROM users WHERE username = ?', [user.username])
@@ -113,7 +113,7 @@ async def login_user(username,password):
         cur.execute('SELECT * FROM users WHERE username = ? AND password = ?', (username,password))
         result = cur.fetchone()
         if result:
-            return {"authenticated": True}
+            return result
     return {"authenticated": False}
 
 @app.post("/send_message")
