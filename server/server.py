@@ -104,7 +104,7 @@ async def register_user(user : User):
     else:
         return {"registration": False}
 
-@app.post("/login")
+@app.get("/login")
 async def login_user(username, password):
     cur.execute('SELECT * FROM users WHERE username = ?', [username])
     result = cur.fetchone()
