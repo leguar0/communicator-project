@@ -113,7 +113,14 @@ async def login_user(username,password):
         cur.execute('SELECT * FROM users WHERE username = ? AND password = ?', (username,password))
         result = cur.fetchone()
         if result:
-            return result
+            user = {
+                "id": result[0],
+                "name": result[1],
+                "surname": result[2],
+                "username": result[3],
+                "password": result[4]
+            }
+            return user
     return {"authenticated": False}
 
 @app.post("/send_message")
