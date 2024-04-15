@@ -64,7 +64,9 @@ async def current_users():
         user = {
             "id": user_data[0],
             "name": user_data[1],
-            "surname": user_data[2]
+            "surname": user_data[2],
+            "username": user_data[3],
+            "password": user_data[4]
         }
         users.append(user)
     return users
