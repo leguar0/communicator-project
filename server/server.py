@@ -64,7 +64,10 @@ async def current_users():
         user = {
             "id": user_data[0],
             "name": user_data[1],
-            "surname": user_data[2]
+            "surname": user_data[2],
+            "username": user_data[3],
+            "password": user_data[4]
+            
         }
         users.append(user)
     return users
@@ -102,12 +105,12 @@ async def register_user(user : User):
     else:
         return {"registration": False}
 
-@app.post("/login")
-async def login_user(user : User):
-    cur.execute('SELECT * FROM users WHERE username = ?', [user.username])
+@app.get("/login")
+async def login_user(username,password):
+    cur.execute('SELECT * FROM users WHERE username = ?', [username])
     result = cur.fetchone()
     if result:
-        cur.execute('SELECT * FROM users WHERE username = ? AND password = ?', (user.username, user.password))
+        cur.execute('SELECT * FROM users WHERE username = ? AND password = ?', (username,password))
         result = cur.fetchone()
         if result:
             return {"authenticated": True}
