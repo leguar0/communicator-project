@@ -11,7 +11,9 @@ def new_database_operations(cursor):
         (
             id_user INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
             name TEXT NOT NULL,
-            surname TEXT NOT NULL
+            surname TEXT NOT NULL,
+            username TEXT NOT NULL,       
+            password TEXT NOT NULL       
         );''')
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS messages
@@ -43,6 +45,8 @@ class User(BaseModel):
     id: int
     name: str
     surname: str
+    username: str
+    password: str
 
 class Message(BaseModel):
     id_sender: int
@@ -87,11 +91,22 @@ async def get_unread_messages(id_user):
 @app.post("/register_user")
 async def register_user(user : User):
     #user.id = random.randint(1, 100) # temporary usage of random library
-    cur.execute('INSERT INTO users VALUES(NULL,?,?)', (user.name, user.surname))
+    cur.execute('INSERT INTO users VALUES(NULL,?,?,?,?)', (user.name, user.surname, user.username, user.password))
     conn.commit()
     #users.append(user)
     user.id = cur.lastrowid
     return user
+
+@app.post("/login")
+async def login_user(user : User):
+    cur.execute('SELECT * FROM users WHERE username = ?', [user.username])
+    result = cur.fetchone()
+    if result:
+        cur.execute('SELECT * FROM users WHERE username = ? AND password = ?', (user.username, user.password))
+        result = cur.fetchone()
+        if result:
+            return {"authenticated": True}
+    return {"authenticated": False}
 
 @app.post("/send_message")
 async def send_message(m: Message):
