@@ -91,11 +91,16 @@ async def get_unread_messages(id_user):
 @app.post("/register_user")
 async def register_user(user : User):
     #user.id = random.randint(1, 100) # temporary usage of random library
-    cur.execute('INSERT INTO users VALUES(NULL,?,?,?,?)', (user.name, user.surname, user.username, user.password))
-    conn.commit()
-    #users.append(user)
-    user.id = cur.lastrowid
-    return user
+    cur.execute('SELECT * FROM users WHERE username = ?', [user.username])
+    result = cur.fetchone()
+    if result is None:
+        cur.execute('INSERT INTO users VALUES(NULL,?,?,?,?)', (user.name, user.surname, user.username, user.password))
+        conn.commit()
+        #users.append(user)
+        user.id = cur.lastrowid
+        return user
+    else:
+        return {"registration": False}
 
 @app.post("/login")
 async def login_user(user : User):
