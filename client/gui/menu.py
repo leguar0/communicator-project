@@ -72,7 +72,7 @@ def get_current_users():
         return []  
 
 def get_unread_messages_count(cur_user_id, user_id):
-    url = "http://localhost:8000/count_unread_messages_from_user/?id_sender={user_id}&id_receiver={cur_user_id}"
+    url = 'http://127.0.0.1:8000/count_unread_messages_from_user?id_sender={user_id}&id_receiver={cur_user_id}'
     response = requests.get(url)
     if response.status_code == 200:
         return response.json()
