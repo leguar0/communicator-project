@@ -4,10 +4,8 @@ import requests
 import login
 import time
 
-result = None
 
-def register_user(name_entry,surname_entry,username_entry,password_entry,reg):
-    global result 
+def register_user(name_entry,surname_entry,username_entry,password_entry,reg): 
     name = name_entry.get()
     surname = surname_entry.get()
     username = username_entry.get()
@@ -16,7 +14,8 @@ def register_user(name_entry,surname_entry,username_entry,password_entry,reg):
     user_json = {"id": 0, "name": name, "surname": surname,"username": username, "password": password}
     url = 'http://127.0.0.1:8000/register_user'
     result = requests.post(url, json=user_json)
-    
+    print(result)
+    print({"id": 0, "name": name, "surname": surname,"username": username, "password": password})
     if result.status_code == 200:
         cur_user_id = result.json()["id"]
         messagebox.showinfo("Sukces", f"Uzytkownik zarejestrowany pomyslnie. ID: {cur_user_id}")

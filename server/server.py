@@ -91,7 +91,7 @@ async def get_unread_messages(id_user):
         conn.commit()
     return fetch
 
-@app.get("/register_user")
+@app.post("/register_user")
 async def register_user(user : User):
     #user.id = random.randint(1, 100) # temporary usage of random library
     cur.execute('SELECT * FROM users WHERE username = ?', [user.username])

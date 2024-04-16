@@ -1,11 +1,19 @@
 import tkinter as tk
 from tkinter import messagebox
+from unittest import result
 import requests
 import importlib
 import register
 import menu
+import inbox
+
+def get_cur_user_id():
+    return ajdi
+
+ajdi = None
 
 def login(username_entry, password_entry, log):
+    global ajdi
     username = username_entry.get()
     password = password_entry.get()
 
@@ -15,20 +23,29 @@ def login(username_entry, password_entry, log):
         response = requests.get(url)
         res = response.json()
 
-        print(response)
-        print(res)
-
         if response.status_code == 200:
             if len(res) > 0:
                 cur_user_id = res["id"]
+                ajdi = cur_user_id
+                inbox.cur_user_id = cur_user_id
                 messagebox.showinfo("Sukces", f"Zalogowano pomyslnie. ID uzytkownika: {cur_user_id}")
                 log.destroy()
-                menu.menu_window()
+                users = get_users()
+                menu.display_menu(users)
+                menu.menu_window(cur_user_id)
         else:
             messagebox.showerror("Blad", "Blad logowania. Sprawdz login i haslo.")
     except Exception as e:
         print(e)
         pass
+    
+def get_users():
+    url = 'http://127.0.0.1:8000/current_users'  # Jest taka œcie¿ka w API!
+    response = requests.get(url)
+    if response.status_code == 200:
+        return response.json()
+    else:
+        return []
 
 def open_register_window(log):
     # Funkcja przenosz¹ca do okna rejestracji

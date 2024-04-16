@@ -3,6 +3,7 @@ from tkinter import messagebox
 import requests
 import menu
 import register
+import login
 
 def display_inbox():
     # Tu umieœæ kod wyœwietlania skrzynki odbiorczej
@@ -11,19 +12,17 @@ def display_inbox():
 def open_menu_window(inbox):
    
     inbox.destroy()  # Zniszczenie okna rejestracji
-    menu.menu_window()  # Otwarcie okna logowania
+    menu.menu_window(cur_user_id)  # Otwarcie okna logowania
  
-def check_unread_messages():
+def check_unread_messages(cur_user_id):
 
-
-
-    cur_user_id = register.result.json()["id"] 
+    print(cur_user_id)
     url = f'http://127.0.0.1:8000/unread_messages?id_user={cur_user_id}'
     unread_messages = requests.get(url).json()
     if len(unread_messages) > 0:
         messagebox.showinfo("Nieprzeczytane wiadomosci", f"Masz {len(unread_messages)} nieprzeczytanych wiadomosci")
     
-def inbox_window():
+def inbox_window(cur_user_id):
      
     inbox = tk.Tk()
     inbox.title("Inbox")
@@ -53,8 +52,7 @@ def inbox_window():
     return_button = tk.Button(inbox, text="Powrot", command=lambda: open_menu_window(inbox), width=10,height=2,bg="red")
     return_button.grid(row=2, column=0, columnspan=2, padx=10, pady=5,sticky="nsew")
     
-
-    unread_messages_button = tk.Button(inbox, text="Sprawdz nieprzeczytane wiadomosci", command=check_unread_messages, state="active")
+    unread_messages_button = tk.Button(inbox, text="Sprawdz nieprzeczytane wiadomosci", command=lambda: check_unread_messages(cur_user_id), state="active")
     unread_messages_button.grid(row=3, column=0, columnspan=2, padx=5, pady=5,sticky="nsew")
 
         
@@ -64,4 +62,4 @@ def inbox_window():
     inbox.mainloop()
 
 if __name__ == "__main__":
-    inbox_window()
+    inbox_window(cur_user_id)
