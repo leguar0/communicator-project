@@ -5,7 +5,7 @@ import inbox
 import chat
 
 def display_menu():
-    # Tu umieœæ kod menu wyboru u¿ytkownika i opcji
+    # Tu umieï¿½ï¿½ kod menu wyboru uï¿½ytkownika i opcji
     pass
 
 def open_inbox_window(menu,cur_user_id):
@@ -20,7 +20,7 @@ def open_chat_window(menu,cur_user_id,user_id):
     
 
 def display_menu(users_list):
-    # Tu umieœæ kod menu wyboru u¿ytkownika i opcji
+    # Tu umieï¿½ï¿½ kod menu wyboru uï¿½ytkownika i opcji
     pass
 
 def menu_window(cur_user_id):
@@ -49,13 +49,13 @@ def menu_window(cur_user_id):
     users_label.grid(row=2, column=0, padx=5, pady=5)
 
 
-    # Wype³nij listê u¿ytkowników
+    # Wypeï¿½nij listï¿½ uï¿½ytkownikï¿½w
     for user in users_list:
         user_id = user["id"]
         username = user["username"]
-        # Pobierz liczbê nieprzeczytanych wiadomoœci od danego u¿ytkownika
+        # Pobierz liczbï¿½ nieprzeczytanych wiadomoï¿½ci od danego uï¿½ytkownika
         unread_messages_count = get_unread_messages_count(cur_user_id, user_id)
-        # Twórz etykietê z nazw¹ u¿ytkownika i liczb¹ nieprzeczytanych wiadomoœci
+        # Twï¿½rz etykietï¿½ z nazwï¿½ uï¿½ytkownika i liczbï¿½ nieprzeczytanych wiadomoï¿½ci
         user_label_text = f"{username} ({unread_messages_count} nieprzeczytane)"
         user_button = tk.Button(menu, text=user_label_text, command=lambda user_id=user_id: open_chat_window(menu, cur_user_id, user_id))
         user_button.grid(row=3 + user_id, column=0, padx=5, pady=5, sticky="nsew")
@@ -72,7 +72,7 @@ def get_current_users():
         return []  
 
 def get_unread_messages_count(cur_user_id, user_id):
-    url = 'http://127.0.0.1:8000/count_unread_messages_from_user?id_sender={user_id}&id_receiver={cur_user_id}'
+    url = f'http://127.0.0.1:8000/count_unread_messages_from_user?id_sender={user_id}&id_receiver={cur_user_id}'
     response = requests.get(url)
     if response.status_code == 200:
         return response.json()

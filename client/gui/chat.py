@@ -6,7 +6,7 @@ import menu
 import register
 
 def start_chat():
-    # Tu umieœæ kod do rozpoczêcia czatu
+    # Tu umieï¿½ï¿½ kod do rozpoczï¿½cia czatu
     pass
 
 def open_menu_window(chat,cur_user_id):
