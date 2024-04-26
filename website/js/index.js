@@ -10,6 +10,7 @@ async function get_current_users(){
 
         for(let i =0;i<resp_data.length;++i){
             let a = document.createElement("a");
+            a.href="chat.html";
             a.id = "user_id_" + resp_data[i].id;
 
             let div = document.createElement("div");
