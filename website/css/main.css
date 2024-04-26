@@ -17,3 +17,36 @@ body{
 .user-holder:hover{
     background-color: bisque;
 }
+
+
+#chat-holder{
+    overflow: hidden;
+    padding: 20px 0px 20px 0px;
+    height: auto;
+    background-color: white;
+}
+.msg-holder{
+    max-width: 80%;
+    padding: 12px;
+    margin-top: 2px;
+    margin-bottom: 2px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    padding-left: 20px;
+    background-color: rgb(216, 255, 255);
+}
+
+.msg-from{
+    align-self: self-start;
+    background-color: cadetblue;
+    margin-left: -6px;
+    padding-left: 24px;
+}
+
+.msg-to{
+    align-self: self-end;
+    background-color:burlywood;
+    margin-right: -6px;
+    padding-right: 24px;
+}
