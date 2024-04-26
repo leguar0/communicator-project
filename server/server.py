@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from pydantic import BaseModel
 import random
 from datetime import datetime
+from fastapi.middleware.cors import CORSMiddleware
 import os
 import sqlite3
 
@@ -39,6 +40,7 @@ if not database_existed:
     
 app = FastAPI()
 #users = []
+app.add_middleware(CORSMiddleware, allow_origins = ['*'], allow_methods=['*'])
 unread_messages = []
 
 class User(BaseModel):
