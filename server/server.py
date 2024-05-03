@@ -92,7 +92,6 @@ async def get_unread_messages(id_user):
 
 @app.post("/register_user")
 async def register_user(user : User):
-    #user.id = random.randint(1, 100) # temporary usage of random library
     cur.execute('SELECT * FROM users WHERE username = ?', [user.username])
     result = cur.fetchone()
     if result is None:
@@ -100,9 +99,10 @@ async def register_user(user : User):
         conn.commit()
         #users.append(user)
         user.id = cur.lastrowid
+        user.password = "" # Let's do not return password ... (tmp solution)
         return user
     else:
-        return {"registration": False}
+        return {"id": -1}
 
 @app.post("/login")
 async def login_user(user : User):
