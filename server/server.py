@@ -7,6 +7,7 @@ from datetime import datetime
 from fastapi.middleware.cors import CORSMiddleware
 import os
 import sqlite3
+from fastapi.middleware.cors import CORSMiddleware
 
 def new_database_operations(cursor):
     cursor.execute('''
@@ -41,9 +42,7 @@ if not database_existed:
     new_database_operations(cur)
     
 app = FastAPI()
-#users = []
-app.add_middleware(CORSMiddleware, allow_origins = ['*'], allow_methods=['*'])
-unread_messages = []
+app.add_middleware(CORSMiddleware, allow_origins = ['*'], allow_methods=['*'], allow_headers=["*"])
 
 class User(BaseModel):
     id: int
