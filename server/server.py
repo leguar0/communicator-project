@@ -94,6 +94,16 @@ async def get_unread_messages(id_user):
         conn.commit()
     return fetch
 
+@app.get("/get_messages")
+async def get_messages(cur_user, from_user):
+    res = cur.execute('SELECT message, date_time, id_sender, id_receiver FROM messages WHERE (id_sender = ? AND id_receiver=?) OR (id_sender=? AND id_receiver = ?)', [cur_user, from_user, from_user, cur_user])
+    fetch = res.fetchall()
+    #if(len(fetch) > 0):
+        #cur.execute('UPDATE messages SET is_read = 1 WHERE id_receiver = ? AND is_read = 0', [id_user])
+        #conn.commit()
+    print(fetch)
+    return fetch
+
 @app.post("/register_user")
 async def register_user(user : User):
     #user.id = random.randint(1, 100) # temporary usage of random library
