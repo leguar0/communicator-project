@@ -6,6 +6,7 @@ import random
 from datetime import datetime
 from fastapi.middleware.cors import CORSMiddleware
 import os
+import json
 import sqlite3
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -129,70 +130,24 @@ async def login_user(user : User):
             return user
     return { "id": -1}
 
+connections: [int, WebSocket] = {}
+
 @app.post("/send_message")
 async def send_message(m: Message):
     cur.execute('INSERT INTO messages VALUES(NULL,?,?,?,?,False)', (m.id_sender, m.id_receiver, m.message, datetime.now()))
     conn.commit()
-
-class ConnectionManager:
-    def __init__(self):
-        self.active_connections = []
+    print(m.id_receiver)
+    if m.id_receiver in connections:
+        await connections[m.id_receiver].send_text(m.json())
     
-    async def connect(self, websocket: WebSocket):
+@app.websocket("/ws/{user_id}")
+async def websocket_endpoint(websocket: WebSocket, user_id: int):
         await websocket.accept()
-        self.active_connections.append(websocket)
-
-    def disconnect(self, websocket: WebSocket):
-        self.active_connections.remove(websocket)
-
-manager = ConnectionManager()
-
-html = """
-<!DOCTYPE html>
-<html>
-    <head>
-        <title>Chat</title>
-    </head>
-    <body>
-        <h1>WebSocket Chat</h1>
-        <form action="" onsubmit="sendMessage(event)">
-            <input type="text" id="messageText" autocomplete="off"/>
-            <button>Send</button>
-        </form>
-        <ul id='messages'>
-        </ul>
-        <script>
-            var ws = new WebSocket("ws://localhost:8000/ws");
-            ws.onmessage = function(event) {
-                var messages = document.getElementById('messages')
-                var message = document.createElement('li')
-                var content = document.createTextNode(event.data)
-                message.appendChild(content)
-                messages.appendChild(message)
-            };
-            function sendMessage(event) {
-                var input = document.getElementById("messageText")
-                ws.send(input.value)
-                input.value = ''
-                event.preventDefault()
-            }
-        </script>
-    </body>
-</html>
-"""
-
-
-@app.get("/")
-async def get():
-    return HTMLResponse(html)
-
-@app.websocket("/ws")
-async def websocket_endpoint(websocket: WebSocket):
-    #await manager.connect(websocket)
-    #try:
-    await websocket.accept()    
+    connections[user_id] = websocket
+    try:
     while True:
         data = await websocket.receive_text()
-        await websocket.send_text(f"Message text was: {data}")
-    #except WebSocketDisconnect:
-     #   manager.disconnect(websocket)
+            m = Message.parse_obj(json.loads(data))
+            await send_message(m)
+    except WebSocketDisconnect:
+        del connections[user_id]
