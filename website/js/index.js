@@ -1,5 +1,7 @@
 "use strict";
 
+const userId = sessionStorage.getItem("user_id");
+
 const usersHolder = document.querySelector("#online-users-holder");
 async function get_current_users(){
     let url = `http://localhost:8000/current_users`;
@@ -9,8 +11,12 @@ async function get_current_users(){
         console.log(resp_data)
 
         for(let i =0;i<resp_data.length;++i){
+
+            if(resp_data[i].id == userId)
+                continue;
+
             let a = document.createElement("a");
-            a.href="chat.html";
+            a.href="chat.html?"+ resp_data[i].id;
             a.id = "user_id_" + resp_data[i].id;
 
             let div = document.createElement("div");
@@ -21,11 +27,6 @@ async function get_current_users(){
             
             usersHolder.appendChild(a);
         }
-
-        
-        //return resp_data.name
     }
 }
-
-
 get_current_users();
