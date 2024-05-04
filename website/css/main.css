@@ -20,11 +20,20 @@ body{
 
 
 #chat-holder{
-    overflow: hidden;
+    overflow-x: hidden;
     padding: 20px 0px 20px 0px;
     height: auto;
     background-color: white;
 }
+
+.scroller {
+    overflow-y: auto;
+    overflow-x: hidden;
+    height: 500px;
+    display: flex;
+    flex-direction: column-reverse;
+  }
+
 .msg-holder{
     max-width: 80%;
     padding: 12px;
@@ -36,6 +45,8 @@ body{
     padding-left: 20px;
     background-color: rgb(216, 255, 255);
 }
+
+
 
 .msg-from{
     align-self: self-start;
