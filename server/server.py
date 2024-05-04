@@ -142,11 +142,11 @@ async def send_message(m: Message):
     
 @app.websocket("/ws/{user_id}")
 async def websocket_endpoint(websocket: WebSocket, user_id: int):
-        await websocket.accept()
+    await websocket.accept()
     connections[user_id] = websocket
     try:
-    while True:
-        data = await websocket.receive_text()
+        while True:
+            data = await websocket.receive_text()
             m = Message.parse_obj(json.loads(data))
             await send_message(m)
     except WebSocketDisconnect:
