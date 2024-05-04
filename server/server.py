@@ -46,10 +46,10 @@ app.add_middleware(CORSMiddleware, allow_origins = ['*'], allow_methods=['*'], a
 
 class User(BaseModel):
     id: int
-    name: str
-    surname: str
-    username: str
-    password: str
+    name: str | None = ""
+    surname: str | None = ""
+    username: str | None =  ""
+    password: str | None =  ""
 
 class Message(BaseModel):
     id_sender: int
