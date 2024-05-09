@@ -1,7 +1,7 @@
 "use strict";
 
 const userId = sessionStorage.getItem("user_id");
-var receiverId = location.search.substring(1);
+const receiverId = location.search.substring(1);
 
 async function get_msgs(){
     let url = `http://localhost:8000/get_messages?cur_user=${userId}&from_user=${receiverId}`;
@@ -26,6 +26,7 @@ websocket.onopen = function(event) {
 
 websocket.onmessage = function(event) {
     const m = JSON.parse(event.data);
+    if(m.id_sender != receiverId) return;
     displayMessage(m.id_sender, m.message);
 };
 
