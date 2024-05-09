@@ -32,7 +32,6 @@ def open_login_window(reg):
 
 def register_window():
     
-    # Funkcja tworz¹ca okno rejestracji
     
     reg = tk.Tk()
     reg.title("Rejestracja")

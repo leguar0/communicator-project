@@ -1,66 +1,82 @@
+from collections import UserList
+import dis
 import tkinter as tk
 from tkinter import messagebox
 import requests
 import inbox
 import chat
+import datetime
 
-def display_menu():
-    # Tu umie�� kod menu wyboru u�ytkownika i opcji
-    pass
+def display_users(window,Button_frame_users, cur_user_id, users_list):
+    users_label = tk.Label(Button_frame_users, text="Lista uzytkownikow:")
+    users_label.grid(row=2, column=0, padx=5, pady=5)
+    for user in users_list:
+        user_id = user["id"]
+        if user_id == cur_user_id:
+            continue
+        username = user["username"]
+        unread_messages_count = get_unread_messages_count(cur_user_id, user_id)
+        user_label_text = f"{username} ({unread_messages_count} nieprzeczytane)"
+        user_button = tk.Button(Button_frame_users, text=user_label_text, command=lambda user_id=user_id: open_chat_window(window, cur_user_id, user_id))
+        user_button.grid(row=3 + user_id, column=0, padx=5, pady=5, sticky="nsew")
 
-def open_inbox_window(menu,cur_user_id):
+def open_inbox_window(window,cur_user_id):
    
-    menu.destroy()  # Zniszczenie okna rejestracji
-    inbox.inbox_window(cur_user_id)  # Otwarcie okna logowania
+    window.destroy()  
+    inbox.inbox_window(cur_user_id)  
     
-def open_chat_window(menu,cur_user_id,user_id):
+def open_chat_window(window,cur_user_id,user_id):
    
-    menu.destroy()  # Zniszczenie okna rejestracji
-    chat.chat_window(cur_user_id,user_id)  # Otwarcie okna logowania
+    window.destroy() 
+    chat.chat_window(cur_user_id,user_id)  
     
 
-def display_menu(users_list):
-    # Tu umie�� kod menu wyboru u�ytkownika i opcji
-    pass
+    
 
-def menu_window(cur_user_id):
+def window_window(cur_user_id):
     
-    users_list = get_current_users()
-        
-    menu = tk.Tk()
-    menu.title("Menu")
+
+    window = tk.Tk()
+    window.title("window")
     
+    button_frame_main = tk.Frame(window)
+    button_frame_main.pack()
+    
+    button_frame_users = tk.Frame(window)
+    button_frame_users.pack()
+    
+
+    def refresh(window,button_frame_users, cur_user_id):
+        for widget in button_frame_users.winfo_children():
+            if isinstance(widget,tk.Button):
+                widget.destroy()
+        users_list = get_current_users()
+        display_users(window,button_frame_users, cur_user_id, users_list)
 
     window_width = 800
     window_height = 600
     
-    screen_width = menu.winfo_screenwidth()
-    screen_height = menu.winfo_screenheight()
+    screen_width = window.winfo_screenwidth()
+    screen_height = window.winfo_screenheight()
     
     x_position = (screen_width - window_width) // 2
     y_position = (screen_height - window_height) // 2
 
-    menu.geometry(f"{window_width}x{window_height}+{x_position}+{y_position}")
+    window.geometry(f"{window_width}x{window_height}+{x_position}+{y_position}")
     
-    inbox_button = tk.Button(menu, text="Skrzynka pocztowa", command=lambda: open_inbox_window(menu, cur_user_id), width=10, height=2, bg="red")
+    inbox_button = tk.Button(button_frame_main, text="Skrzynka pocztowa", command=lambda: open_inbox_window(window, cur_user_id), width=10, height=2, bg="red")
     inbox_button.grid(row=0, column=0, columnspan=2, padx=10, pady=5,sticky="nsew")
 
-    users_label = tk.Label(menu, text="Lista uzytkownikow:")
-    users_label.grid(row=2, column=0, padx=5, pady=5)
 
 
-    # Wype�nij list� u�ytkownik�w
-    for user in users_list:
-        user_id = user["id"]
-        username = user["username"]
-        # Pobierz liczb� nieprzeczytanych wiadomo�ci od danego u�ytkownika
-        unread_messages_count = get_unread_messages_count(cur_user_id, user_id)
-        # Tw�rz etykiet� z nazw� u�ytkownika i liczb� nieprzeczytanych wiadomo�ci
-        user_label_text = f"{username} ({unread_messages_count} nieprzeczytane)"
-        user_button = tk.Button(menu, text=user_label_text, command=lambda user_id=user_id: open_chat_window(menu, cur_user_id, user_id))
-        user_button.grid(row=3 + user_id, column=0, padx=5, pady=5, sticky="nsew")
 
-    menu.mainloop()
+    refresh(window,button_frame_users, cur_user_id)
+    
+    
+    inbox_button = tk.Button(button_frame_main, text="Odswiez", command=lambda: refresh(window,button_frame_users, cur_user_id), width=10, height=2, bg="red")
+    inbox_button.grid(row=0, column=0, columnspan=2, padx=10, pady=5,sticky="nsew")
+    
+    window.mainloop()
     
 
 def get_current_users():
@@ -80,4 +96,4 @@ def get_unread_messages_count(cur_user_id, user_id):
         return 0
 
 if __name__ == "__main__":
-    menu_window("current_user_id")
+    window_window()
