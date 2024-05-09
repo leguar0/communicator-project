@@ -125,7 +125,7 @@ async def login_user(user : User):
                 "name": result[1],
                 "surname": result[2],
                 "username": result[3],
-            "password": ""
+                "password": "" # Let's do not return password ... (tmp solution)
             }
             return user
     return { "id": -1}
