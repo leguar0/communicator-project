@@ -14,9 +14,9 @@ def display_users(window,Button_frame_users, cur_user_id, users_list):
         user_id = user["id"]
         if user_id == cur_user_id:
             continue
-        username = user["username"]
+        surname = user["surname"]
         unread_messages_count = get_unread_messages_count(cur_user_id, user_id)
-        user_label_text = f"{username} ({unread_messages_count} nieprzeczytane)"
+        user_label_text = f"{surname} ({unread_messages_count} nieprzeczytane)"
         user_button = tk.Button(Button_frame_users, text=user_label_text, command=lambda user_id=user_id: open_chat_window(window, cur_user_id, user_id))
         user_button.grid(row=3 + user_id, column=0, padx=5, pady=5, sticky="nsew")
 
@@ -51,6 +51,7 @@ def window_window(cur_user_id):
             if isinstance(widget,tk.Button):
                 widget.destroy()
         users_list = get_current_users()
+        
         display_users(window,button_frame_users, cur_user_id, users_list)
 
     window_width = 800
@@ -67,15 +68,15 @@ def window_window(cur_user_id):
     inbox_button = tk.Button(button_frame_main, text="Skrzynka pocztowa", command=lambda: open_inbox_window(window, cur_user_id), width=10, height=2, bg="red")
     inbox_button.grid(row=0, column=0, columnspan=2, padx=10, pady=5,sticky="nsew")
 
-
+      
+    inbox_button = tk.Button(button_frame_main, text="Odswiez", command=lambda: refresh(window,button_frame_users, cur_user_id), width=10, height=2, bg="red")
+    inbox_button.grid(row=0, column=1, columnspan=2, padx=10, pady=5,sticky="nsew")
+    
 
 
     refresh(window,button_frame_users, cur_user_id)
     
-    
-    inbox_button = tk.Button(button_frame_main, text="Odswiez", command=lambda: refresh(window,button_frame_users, cur_user_id), width=10, height=2, bg="red")
-    inbox_button.grid(row=0, column=0, columnspan=2, padx=10, pady=5,sticky="nsew")
-    
+  
     window.mainloop()
     
 
