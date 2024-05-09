@@ -1,9 +1,14 @@
 import tkinter as tk
-from tkinter import messagebox
+from tkinter import Scrollbar, messagebox
+from turtle import left, right
 from unittest import result
 import requests
 import menu
 import register
+from tkinter import ttk
+
+
+from server.server import User
 
 def start_chat():
     pass
@@ -23,19 +28,46 @@ def send_message(message_entry,other_user_id,cur_user_id):
     else:
         messagebox.showerror("Blad", "Zle ID odbiorcy.")
         
-def show_messages(chat_frame_main,cur_user_id,user_id):
-   pass
+def show_messages(scrollable_frame,cur_user_id,user_id):
+    messages = get_messages(cur_user_id,user_id)  
 
-   
+    for message in messages:
+        message_frame = tk.Label(scrollable_frame, text=message[0],width=25, wraplength=100)
+        if message[2] == cur_user_id:
+            message_frame.config(bg="green")
+            message_frame.grid(column=1)
+        else:
+            message_frame.config(bg="yellow")
+            message_frame.grid(column=0)
+        
 
 def chat_window(cur_user_id,other_user_id):
     
     chat = tk.Tk()
     chat.title("chat")
     
-    chat_frame_main = tk.Frame(chat,height=450,width=400,background="gray")
+    chat_frame_main = ttk.Frame(chat,height=450,width=400 )    
+    canvas = tk.Canvas(chat_frame_main)
+    scrollbar = ttk.Scrollbar(chat_frame_main, orient="vertical", command=canvas.yview)
+    scrollable_frame = ttk.Frame(canvas)
+
+    scrollable_frame.bind(
+        "<Configure>",
+        lambda e: canvas.configure(
+            scrollregion=canvas.bbox("all")
+        )
+    )
+
+    canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
+
+    canvas.configure(yscrollcommand=scrollbar.set)
+
+    show_messages(scrollable_frame, cur_user_id, other_user_id)
+
     chat_frame_main.pack()
-    
+    canvas.pack(side="left", fill="both", expand=True)
+    scrollbar.pack(side="right", fill="y")
+
     chat_frame_second = tk.Frame(chat)
     chat_frame_second.pack()
     
@@ -49,23 +81,34 @@ def chat_window(cur_user_id,other_user_id):
     x_position = (screen_width - menu_width) // 2
     y_position = (screen_height - menu_height) // 2
 
+    
     chat.geometry(f"{menu_width}x{menu_height}+{x_position}+{y_position}")
     
-    
-    message_label = tk.Label(chat_frame_second, text="Tresc wiadomosci:")
-    message_label.grid(row=0, column=0, padx=5, pady=5,sticky="nsew")
-    message_entry = tk.Entry(chat_frame_second)
-    message_entry.grid(row=0, column=1, padx=5, pady=5,sticky="nsew")
-    
-    return_button = tk.Button(chat_frame_second, text="Powrot", command=lambda: open_menu_menu(chat,cur_user_id), width=10,height=2,bg="red")
-    return_button.grid(row=2, column=0, columnspan=2, padx=10, pady=5,sticky="nsew")
-    
-    send_message_button = tk.Button(chat_frame_second, text="Wyslij wiadomosc", command=lambda: send_message(message_entry,other_user_id,cur_user_id), state="active")
-    send_message_button.grid(row=5, column=0, columnspan=2, padx=5, pady=5,sticky="nsew")
-    
+    chat_frame_second.pack()
 
+    message_label = tk.Label(chat_frame_second, text="Tresc wiadomosci:")
+    message_label.pack(padx=5, pady=5, anchor="w")
+
+    message_entry = tk.Entry(chat_frame_second)
+    message_entry.pack(padx=5, pady=5, fill="x")
+
+    return_button = tk.Button(chat_frame_second, text="Powrot", command=lambda: open_menu_menu(chat,cur_user_id), width=10,height=2,bg="red")
+    return_button.pack(padx=10, pady=5, fill="x")
+
+    send_message_button = tk.Button(chat_frame_second, text="Wyslij wiadomosc", command=lambda: send_message(message_entry,other_user_id,cur_user_id), state="active")
+    send_message_button.pack(padx=5, pady=5, fill="x")
+    
     chat.mainloop()
 
 if __name__ == "__main__":
     chat_menu()
     
+
+def get_messages(cur_user_id,user_id):
+    url = f"http://localhost:8000/get_messages?cur_user={cur_user_id}&from_user={user_id}"
+    
+    response = requests.get(url)
+    if response.status_code == 200:
+        return response.json()
+    else:
+        return [] 
