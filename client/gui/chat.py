@@ -4,9 +4,10 @@ from turtle import left, right
 from unittest import result
 import requests
 import menu
+import websocket
 import register
 from tkinter import ttk
-
+from threading import *
 
 from server.server import User
 
@@ -97,6 +98,34 @@ def chat_window(cur_user_id,other_user_id):
 
     send_message_button = tk.Button(chat_frame_second, text="Wyslij wiadomosc", command=lambda: send_message(message_entry,other_user_id,cur_user_id), state="active")
     send_message_button.pack(padx=5, pady=5, fill="x")
+         
+    def threading(cur_user_id): 
+        t1=Thread(target=work, args=[cur_user_id]) 
+        t1.start() 
+  
+    def work(cur_user_id): 
+  
+        def on_message(ws, message):
+            print(f"Received message: {message}")
+
+        def on_error(ws, error):
+            print(f"Error: {error}")
+
+        def on_close(ws):
+            print("### Closed ###")
+
+        def on_open(ws):
+            print("### OPEN ###")
+
+        websocket.enableTrace(True)
+        ws = websocket.WebSocketApp(f"ws://localhost:8000/ws/{cur_user_id}",
+                                    on_message = on_message,
+                                    on_error = on_error,
+                                    on_close = on_close)
+        ws.on_open = on_open
+        ws.run_forever()
+
+    threading(cur_user_id)
     
     chat.mainloop()
 
