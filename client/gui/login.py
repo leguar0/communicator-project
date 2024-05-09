@@ -12,21 +12,24 @@ import inbox
 def login(username_entry, password_entry, log):
     username = username_entry.get()
     password = password_entry.get()
-
-    url = f'http://127.0.0.1:8000/login?username={username}&password={password}'
+    
+    user_json = {"id": 0, "username": username, "password": password}
+   
+    url = f'http://127.0.0.1:8000/login'
+    
 
     try:
-        response = requests.get(url)
-        res = response.json()
+        result = requests.post(url, json=user_json)
 
-        if response.status_code == 200:
-            if len(res) > 0:
-                cur_user_id = res["id"]
-                inbox.cur_user_id = cur_user_id
-                messagebox.showinfo("Sukces", f"Zalogowano pomyslnie. ID uzytkownika: {cur_user_id}")
-                log.destroy()
-                users = get_users()
-                menu.window_window(cur_user_id)
+        if result.status_code == 200:
+            res = result.json()
+            print(res)
+            cur_user_id = res["id"]
+            inbox.cur_user_id = cur_user_id
+            messagebox.showinfo("Sukces", f"Zalogowano pomyslnie. ID uzytkownika: {cur_user_id}")
+            log.destroy()
+            users = get_users()
+            menu.window_window(cur_user_id)
         else:
             messagebox.showerror("Blad", "Blad logowania. Sprawdz login i haslo.")
     except Exception as e:
