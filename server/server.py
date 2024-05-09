@@ -1,9 +1,14 @@
-from fastapi import FastAPI
+from calendar import c
+from fastapi import FastAPI, WebSocket, WebSocketDisconnect
+from fastapi.responses import HTMLResponse
 from pydantic import BaseModel
 import random
 from datetime import datetime
+from fastapi.middleware.cors import CORSMiddleware
 import os
+import json
 import sqlite3
+from fastapi.middleware.cors import CORSMiddleware
 
 def new_database_operations(cursor):
     cursor.execute('''
@@ -38,15 +43,14 @@ if not database_existed:
     new_database_operations(cur)
     
 app = FastAPI()
-#users = []
-unread_messages = []
+app.add_middleware(CORSMiddleware, allow_origins = ['*'], allow_methods=['*'], allow_headers=["*"])
 
 class User(BaseModel):
     id: int
-    name: str
-    surname: str
-    username: str
-    password: str
+    name: str | None = ""
+    surname: str | None = ""
+    username: str | None =  ""
+    password: str | None =  ""
 
 class Message(BaseModel):
     id_sender: int
@@ -57,17 +61,14 @@ class Message(BaseModel):
 
 @app.get("/current_users")
 async def current_users():
-    cur.execute('SELECT * FROM users')
+    cur.execute('SELECT id_user, name, surname FROM users')
     users_data = cur.fetchall()
     users = []
     for user_data in users_data:
         user = {
             "id": user_data[0],
             "name": user_data[1],
-            "surname": user_data[2],
-            "username": user_data[3],
-            "password": user_data[4]
-            
+            "surname": user_data[2]
         }
         users.append(user)
     return users
@@ -91,39 +92,62 @@ async def get_unread_messages(id_user):
         conn.commit()
     return fetch
 
+@app.get("/get_messages")
+async def get_messages(cur_user, from_user):
+    res = cur.execute('SELECT message, date_time, id_sender, id_receiver FROM messages WHERE (id_sender = ? AND id_receiver=?) OR (id_sender=? AND id_receiver = ?)', [cur_user, from_user, from_user, cur_user])
+    fetch = res.fetchall()
+    #if(len(fetch) > 0):
+        #cur.execute('UPDATE messages SET is_read = 1 WHERE id_receiver = ? AND is_read = 0', [id_user])
+        #conn.commit()
+    print(fetch)
+    return fetch
+
 @app.post("/register_user")
 async def register_user(user : User):
-    #user.id = random.randint(1, 100) # temporary usage of random library
     cur.execute('SELECT * FROM users WHERE username = ?', [user.username])
     result = cur.fetchone()
     if result is None:
         cur.execute('INSERT INTO users VALUES(NULL,?,?,?,?)', (user.name, user.surname, user.username, user.password))
         conn.commit()
-        #users.append(user)
         user.id = cur.lastrowid
+        user.password = "" # Let's do not return password ... (tmp solution)
         return user
     else:
-        return {"registration": False}
+        return {"id": -1}
 
-@app.get("/login")
-async def login_user(username,password):
-    cur.execute('SELECT * FROM users WHERE username = ?', [username])
+@app.post("/login")
+async def login_user(user : User):
+    cur.execute('SELECT id_user, name, surname, username FROM users WHERE username = ? AND password = ?', (user.username, user.password))
     result = cur.fetchone()
     if result:
-        cur.execute('SELECT * FROM users WHERE username = ? AND password = ?', (username,password))
-        result = cur.fetchone()
-        if result:
             user = {
                 "id": result[0],
                 "name": result[1],
                 "surname": result[2],
                 "username": result[3],
-                "password": result[4]
+                "password": "" # Let's do not return password ... (tmp solution)
             }
             return user
-    return {"authenticated": False}
+    return { "id": -1}
+
+connections: [int, WebSocket] = {}
 
 @app.post("/send_message")
 async def send_message(m: Message):
     cur.execute('INSERT INTO messages VALUES(NULL,?,?,?,?,False)', (m.id_sender, m.id_receiver, m.message, datetime.now()))
     conn.commit()
+    print(m.id_receiver)
+    if m.id_receiver in connections:
+        await connections[m.id_receiver].send_text(m.json())
+    
+@app.websocket("/ws/{user_id}")
+async def websocket_endpoint(websocket: WebSocket, user_id: int):
+    await websocket.accept()
+    connections[user_id] = websocket
+    try:
+        while True:
+            data = await websocket.receive_text()
+            m = Message.parse_obj(json.loads(data))
+            await send_message(m)
+    except WebSocketDisconnect:
+        del connections[user_id]
