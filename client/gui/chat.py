@@ -10,8 +10,8 @@ def start_chat():
 
 def open_menu_menu(chat,cur_user_id):
    
-    chat.destroy()  # Zniszczenie okna rejestracji
-    menu.window_window(cur_user_id)  # Otwarcie okna logowania
+    chat.destroy() 
+    menu.window_window(cur_user_id)
 
 def send_message(message_entry,other_user_id,cur_user_id):  
     message = message_entry.get()
@@ -23,8 +23,10 @@ def send_message(message_entry,other_user_id,cur_user_id):
     else:
         messagebox.showerror("Blad", "Zle ID odbiorcy.")
         
-def show_messages():
-    
+def show_messages(chat_frame_main,cur_user_id,user_id):
+   pass
+
+   
 
 def chat_window(cur_user_id,other_user_id):
     
@@ -66,3 +68,4 @@ def chat_window(cur_user_id,other_user_id):
 
 if __name__ == "__main__":
     chat_menu()
+    
