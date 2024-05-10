@@ -6,6 +6,7 @@ import requests
 import menu
 import websocket
 import register
+import json
 from tkinter import ttk
 from threading import *
 
@@ -19,28 +20,36 @@ def open_menu_menu(chat,cur_user_id):
     chat.destroy() 
     menu.window_window(cur_user_id)
 
-def send_message(message_entry,other_user_id,cur_user_id):  
+def send_message(message_entry,other_user_id,cur_user_id,scrollable_frame):  
     message = message_entry.get()
     id_receiver = other_user_id
     if id_receiver != 0:
         url = f'http://127.0.0.1:8000/send_message'
         requests.post(url, json={"id_sender": cur_user_id, "id_receiver": id_receiver, "message": message})
         messagebox.showinfo("Sukces", "Wiadomosc wyslana pomyslnie.")
+        message_json = {
+            "message": message,
+            "id_sender": cur_user_id
+        }
+        show_message(scrollable_frame, cur_user_id, message_json)
     else:
         messagebox.showerror("Blad", "Zle ID odbiorcy.")
         
 def show_messages(scrollable_frame,cur_user_id,user_id):
     messages = get_messages(cur_user_id,user_id)  
-
+    print(messages)
     for message in messages:
-        message_frame = tk.Label(scrollable_frame, text=message[0],width=25, wraplength=100)
-        if message[2] == cur_user_id:
-            message_frame.config(bg="green")
-            message_frame.grid(column=1)
-        else:
-            message_frame.config(bg="yellow")
-            message_frame.grid(column=0)
-        
+        show_message(scrollable_frame, cur_user_id, message)
+   
+def show_message(scrollable_frame,cur_user_id, message):
+    print(message)
+    message_frame = tk.Label(scrollable_frame, text=message["message"],width=25, wraplength=100)
+    if message["id_sender"] == cur_user_id:
+        message_frame.config(bg="green")
+        message_frame.grid(column=1)
+    else:
+        message_frame.config(bg="yellow")
+        message_frame.grid(column=0)
 
 def chat_window(cur_user_id,other_user_id):
     
@@ -96,17 +105,23 @@ def chat_window(cur_user_id,other_user_id):
     return_button = tk.Button(chat_frame_second, text="Powrot", command=lambda: open_menu_menu(chat,cur_user_id), width=10,height=2,bg="red")
     return_button.pack(padx=10, pady=5, fill="x")
 
-    send_message_button = tk.Button(chat_frame_second, text="Wyslij wiadomosc", command=lambda: send_message(message_entry,other_user_id,cur_user_id), state="active")
+    send_message_button = tk.Button(chat_frame_second, text="Wyslij wiadomosc", command=lambda: send_message(message_entry,other_user_id,cur_user_id,scrollable_frame), state="active")
     send_message_button.pack(padx=5, pady=5, fill="x")
          
-    def threading(cur_user_id): 
-        t1=Thread(target=work, args=[cur_user_id]) 
+    def threading(cur_user_id, scrollable_frame): 
+        t1=Thread(target=work, args=[cur_user_id, scrollable_frame]) 
         t1.start() 
   
-    def work(cur_user_id): 
+    def work(cur_user_id, scrollable_frame): 
   
         def on_message(ws, message):
-            print(f"Received message: {message}")
+            try:
+                message_json = json.loads(message)
+                print(message_json)
+                show_message(scrollable_frame, cur_user_id, message_json)
+                print(f"Received message: {message}")
+            except json.JSONDecodeError as e:
+                pass
 
         def on_error(ws, error):
             print(f"Error: {error}")
@@ -125,7 +140,7 @@ def chat_window(cur_user_id,other_user_id):
         ws.on_open = on_open
         ws.run_forever()
 
-    threading(cur_user_id)
+    threading(cur_user_id, scrollable_frame)
     
     chat.mainloop()
 
