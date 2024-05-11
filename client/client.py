@@ -36,17 +36,13 @@ class Client:
                 if res["id"] != -1:
                     self.cur_user_id = res["id"]
                     self.login_interface.close_window()
-                    self.menu_interface = MenuInterface()
+                    self.menu_interface = MenuInterface(self)
                     self.menu_interface.create_window()
                 else:
                     self.login_interface.show_messagebox("ERROR", "Sprawdz login i haslo")    
         except Exception as e:
             print(e)
             
-    def refresh_button(self):
-        user_list = self.get_users()
-        
-              
     def get_users(self):
         response = requests.get('http://127.0.0.1:8000/current_users')
         if response.status_code == 200:
@@ -85,6 +81,12 @@ class Client:
         else:
             return 0
         
+    def get_messages(self, user_id):
+        response = requests.get(f"http://localhost:8000/get_messages?cur_user={self.cur_user_id}&from_user={user_id}")
+        if response.status_code == 200:
+            return response.json()
+        else:
+            return [] 
 
 if __name__ == "__main__":
     client = Client()

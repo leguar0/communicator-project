@@ -9,31 +9,11 @@ from tkinter import ttk
 from threading import *
 
 class ChatInterface:
-    pass
+    def __init__(self, client):
+        self.root = tk.Tk()
+        self.root.title()
 
-    def open_menu_menu(chat,cur_user_id):
-   
-        chat.destroy() 
-        menu.window_window(cur_user_id)
-
-
-    def show_messages(scrollable_frame,cur_user_id,user_id):
-        messages = get_messages(cur_user_id,user_id)  
-        print(messages)
-        for message in messages:
-            show_message(scrollable_frame, cur_user_id, message)
-   
-    def show_message(scrollable_frame,cur_user_id, message):
-        print(message)
-        message_frame = tk.Label(scrollable_frame, text=message["message"],width=25, wraplength=100)
-        if message["id_sender"] == cur_user_id:
-            message_frame.config(bg="green")
-            message_frame.grid(column=1)
-        else:
-            message_frame.config(bg="yellow")
-            message_frame.grid(column=0)
-
-    def chat_window(cur_user_id,other_user_id):
+    def create_window(cur_user_id,other_user_id):
     
         chat = tk.Tk()
         chat.title("chat")
@@ -127,15 +107,25 @@ class ChatInterface:
     def run():
         self.chat.mainloop()
 
+        
+    def show_messages(scrollable_frame,cur_user_id,user_id):
+        messages = get_messages(cur_user_id,user_id)  
+        print(messages)
+        for message in messages:
+            show_message(scrollable_frame, cur_user_id, message)
+   
+    def show_message(scrollable_frame,cur_user_id, message):
+        print(message)
+        message_frame = tk.Label(scrollable_frame, text=message["message"],width=25, wraplength=100)
+        if message["id_sender"] == cur_user_id:
+            message_frame.config(bg="green")
+            message_frame.grid(column=1)
+        else:
+            message_frame.config(bg="yellow")
+            message_frame.grid(column=0)
+            
+
 if __name__ == "__main__":
     chat_menu()
     
 
-def get_messages(cur_user_id,user_id):
-    url = f"http://localhost:8000/get_messages?cur_user={cur_user_id}&from_user={user_id}"
-    
-    response = requests.get(url)
-    if response.status_code == 200:
-        return response.json()
-    else:
-        return [] 
