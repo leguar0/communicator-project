@@ -1,50 +1,93 @@
-import time
+from email import message
 import requests
+import importlib
+from collections import UserList
+import dis
+import datetime
+import time
+import websocket
+import json
+from threading import *
+import tkinter as tk
+from tkinter import messagebox
+from gui.login import LoginInterface
+from gui.register import RegisterInterface
+from gui.menu import MenuInterface
+from gui.chat import ChatInterface
 
-name = input("Name: ")
-surname = input("Surname: ")
+class Client:
+    def __init__(self):
+        self.cur_user_id = -1
+        self.login_interface = None
+        self.menu_interface = None
+        self.register_interface = None
+        self.chat_interface = None
+    
+    def set_login_interface(self, login_interface):
+        self.login_interface = login_interface
 
-user_json = { 
-    "id" : 0,
-    "name": name,
-    "surname": surname
-    }
+    def login_button(self, username, password):
+        try:
+            user_json = {"id": 0, "username": username, "password": password}
+            result = requests.post('http://127.0.0.1:8000/login', json=user_json)
+        
+            if result.status_code == 200:
+                res = result.json()
+                if res["id"] != -1:
+                    self.cur_user_id = res["id"]
+                    self.login_interface.close_window()
+                    self.menu_interface = MenuInterface()
+                    self.menu_interface.create_window()
+                else:
+                    self.login_interface.show_messagebox("ERROR", "Sprawdz login i haslo")    
+        except Exception as e:
+            print(e)
+            
+    def refresh_button(self):
+        user_list = self.get_users()
+        
+              
+    def get_users(self):
+        response = requests.get('http://127.0.0.1:8000/current_users')
+        if response.status_code == 200:
+            return response.json()
+        else:
+            return []
 
-url = 'http://127.0.0.1:8000/register_user'
-result = requests.post(url, json = user_json)
-print(result.status_code, result.json())
-cur_user_id = result.json()["id"]
+    def send_message(self, message, other_user_id):  
+        cur_user_id = self.cur_user_id
+        id_receiver = other_user_id
+        if id_receiver != 0:
+            message_json = {"id_sender": cur_user_id, "id_receiver": id_receiver, "message": message}
+            requests.post('http://127.0.0.1:8000/send_message', json=message_json)
+            message_json = {
+                "message": message,
+                "id_sender": cur_user_id
+            }
+            self.chat_interface.show_message(self.chat_inerface.scrollable_frame, cur_user_id, message_json)
+            
+    def register_user(self, name, surname, username, password):
+        user_json = {"id": 0, "name": name, "surname": surname,"username": username, "password": password}
+        result = requests.post('http://127.0.0.1:8000/register_user', json=user_json)
+        if result.status_code == 200:
+            cur_user_id = result.json()["id"]
+            messagebox.showinfo("Sukces", f"Uzytkownik zarejestrowany pomyslnie. ID: {cur_user_id}")
+        
+            reg.destroy()  
+            login.login_window() 
+        else:
+            messagebox.showerror("Blad", "Nie udalo sie zarejestrowac uzytkownika.")
 
-time.sleep(2)
-url = 'http://127.0.0.1:8000/current_users'
-print("Current users:")
-print(requests.get(url).json())
+    def get_unread_messages_count(self, user_id):
+        response = requests.get(f'http://127.0.0.1:8000/count_unread_messages_from_user?id_sender={user_id}&id_receiver={self.cur_user_id}')
+        if response.status_code == 200:
+            return response.json()
+        else:
+            return 0
+        
 
-message = input("Message:")
-id_receiver = int(input("to user: "))
-if id_receiver != 0:
-    url = f'http://127.0.0.1:8000/send_message'
-    requests.post(url, json = {"id_sender":cur_user_id, "id_reciver":id_receiver,"message":message})
-
-
-url = f'http://127.0.0.1:8000/unread_messages?id_user={cur_user_id}'
-url2 = f'http://127.0.0.1:8000/count_unread_messages_from_user?id_sender={id_receiver}&id_receiver={cur_user_id}'
-try:
-    while True:
-        response = requests.get(url2)
-        res = response.json()
-        if len(res) > 0:
-            for result in res:
-                id_sender = result[0]
-                name_sender = result[1]
-                total_message = result[2]
-                if name_sender != None:
-                    print(f"ID_SENDER: {id_sender}, NAME_SENDER: {name_sender}, COUNT: {total_message}")     
-            response = requests.get(url)
-            res = response.json()
-            if len(res) > 0:
-                print(res)
-            time.sleep(2)
-        time.sleep(2)
-except KeyboardInterrupt:
-    pass
+if __name__ == "__main__":
+    client = Client()
+    login_interface = LoginInterface(client.login_button)
+    client.set_login_interface(login_interface)
+    login_interface.run()
