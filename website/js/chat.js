@@ -9,7 +9,11 @@ if(currentUserNamePlaceholderElement != null && USER_FULLNAME != null)
 
 const userId = USER_ID;
 const searchParams = new URLSearchParams(location.search.substring(1));
-const receiverId = location.search.substring(1);
+const receiverId = searchParams.get("id");
+const receiverFullname = searchParams.get("fullname");
+
+if(receiverFullname != null)
+    document.querySelector("#receiver-fullname").innerText = receiverFullname;
 
 async function get_msgs(){
     let url = `http://localhost:8000/get_messages?cur_user=${userId}&from_user=${receiverId}`;
