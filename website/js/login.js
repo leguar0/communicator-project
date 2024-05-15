@@ -19,8 +19,8 @@ document.querySelector("#login-btn").addEventListener("click",()=>{
     if (xhr.readyState == 4 && xhr.status == 200) {
         let user = JSON.parse(xhr.responseText);
 
-        sessionStorage.setItem("user_id", user.id );
-        if(user.id != -1)
+        login(user.id, user.name, user.surname);
+        if(USER_ID != -1)
             window.open("index.html","_self");
 
     } else {
