@@ -19,12 +19,10 @@ async function get_msgs(){
     let url = `http://localhost:8000/get_messages?cur_user=${userId}&from_user=${receiverId}`;
     let response = await fetch(url);
     if(response.ok){
-        let resp_data = await response.json();
+        let data = await response.json();
 
-        for(let i =0;i<resp_data.length;++i){
-            let from = resp_data[i][2];
-            displayMessage(from, resp_data[i][0]);
-        }
+        for(let i=0;i<data.length;++i)
+            displayMessage(data[i]["id_sender"], data[i]["message"]);
 
     }
 }
