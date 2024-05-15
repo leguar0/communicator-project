@@ -30,6 +30,7 @@ body{
     overflow-y: auto;
     overflow-x: hidden;
     height: 500px;
+    max-height: 45vh;
     display: flex;
     flex-direction: column-reverse;
   }
