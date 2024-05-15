@@ -1,6 +1,14 @@
 "use strict";
 
-const userId = sessionStorage.getItem("user_id");
+
+if(USER_ID == null || USER_ID == -1)
+    window.open("login.html","_self");
+const currentUserNamePlaceholderElement = document.querySelector("#current-user-name");
+if(currentUserNamePlaceholderElement != null && USER_FULLNAME != null)
+    currentUserNamePlaceholderElement.innerText = ` ${USER_FULLNAME}`;
+
+const userId = USER_ID;
+const searchParams = new URLSearchParams(location.search.substring(1));
 const receiverId = location.search.substring(1);
 
 async function get_msgs(){
