@@ -21,8 +21,8 @@ document.querySelector("#register-btn").addEventListener("click",()=>{
         password: passwordInput.value
     });
     xhr.onload = () => {
-    if (xhr.readyState == 4 && xhr.status == 201) {
-        console.log(JSON.parse(xhr.responseText));
+    if (xhr.readyState == 4 && xhr.status == 200) {
+        window.open("login.html","_self");
     } else {
         console.log(`Error: ${xhr.status}`);
     }
