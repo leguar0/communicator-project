@@ -81,9 +81,7 @@ class Client:
             self.chat_interface = ChatInterface(self)
             self.chat_interface.create_window()
             
-            self.threading()
-
-            
+            self.threading() 
 
     def get_other_user_id(self):
         return self.other_user_id

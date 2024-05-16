@@ -81,7 +81,8 @@ class ChatInterface:
             
     def send_message(self):
         _message = self.message_entry.get()
-        
+        self.message_entry.delete('0', 'end')
+
         self.show_message(_message, self.client.get_cur_user_id())
         self.client.send_message(_message)
             
