@@ -7,7 +7,7 @@ import datetime
 import time
 import websocket
 import json
-from threading import *
+import threading
 import tkinter as tk
 from tkinter import messagebox
 from gui.login import LoginInterface
@@ -18,6 +18,7 @@ from gui.chat import ChatInterface
 class Client:
     def __init__(self):
         self.cur_user_id = -1
+        self.user = None
         self.other_user_id = -1
         self.login_interface = None
         self.menu_interface = None
@@ -34,8 +35,10 @@ class Client:
         
             if result.status_code == 200:
                 res = result.json()
+                print(res)
                 if res["id"] != -1:
                     self.cur_user_id = res["id"]
+                    self.user = res
                     self.login_interface.close_window()
                     self.menu_interface = MenuInterface(self)
                     self.menu_interface.create_window()
@@ -55,6 +58,7 @@ class Client:
         
     def back_menu(self):
         self.chat_interface.close_window()
+        self.ws.close()
         self.menu_interface.create_window()
 
     def register_button(self, name, surname, username, password):
@@ -80,7 +84,7 @@ class Client:
 
             self.chat_interface = ChatInterface(self)
             self.chat_interface.create_window()
-            
+
             self.threading(self.chat_interface.get_scrollable_frame(), self.get_cur_user_id()) 
             self.chat_interface.run()
 
@@ -103,6 +107,8 @@ class Client:
                 _name_surname = user["name"] + " " + user["surname"]
                 return _name_surname
 
+    def get_user(self):
+        return self.user
 
     def get_users(self):
         response = requests.get('http://127.0.0.1:8000/current_users')
@@ -138,9 +144,9 @@ class Client:
                 return [] 
 
     def threading(self, scrollable_frame, cur_user_id): 
-        t1=Thread(target=self.work, args=[scrollable_frame, cur_user_id]) 
+        t1=threading.Thread(target=self.work, args=[scrollable_frame, cur_user_id]) 
         t1.start() 
-  
+      
     def work(self, scrollable_frame, cur_user_id): 
         def on_message(ws, message):
             try:
@@ -153,19 +159,20 @@ class Client:
         def on_error(ws, error):
             print(f"Error: {error}")
 
-        def on_close(ws):
+        def on_close(ws, status, message):
             print("### Closed ###")
 
         def on_open(ws):
             print("### OPEN ###")
 
         websocket.enableTrace(True)
-        ws = websocket.WebSocketApp(f"ws://localhost:8000/ws/{cur_user_id}",
+        self.ws = websocket.WebSocketApp(f"ws://localhost:8000/ws/{cur_user_id}",
                                         on_message = on_message,
                                         on_error = on_error,
                                         on_close = on_close)
-        ws.on_open = on_open
-        ws.run_forever()
+        self.ws.on_open = on_open
+        self.ws.run_forever()
+
             
 if __name__ == "__main__":
     client = Client()

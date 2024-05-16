@@ -53,15 +53,17 @@ class ChatInterface:
 
         message_label = tk.Label(chat_frame_second, text="Tresc wiadomosci:")
         message_label.pack(padx=5, pady=5, anchor="w")
-
+        
         self.message_entry = tk.Entry(chat_frame_second)
-        self.message_entry.pack(padx=5, pady=5, fill="x")
+        self.message_entry.pack(padx=5, pady=5, fill="x", expand=True)
 
-        return_button = tk.Button(chat_frame_second, text="Powrot", command=self.client.back_menu, bg="#e6a565", bd=1)
-        return_button.pack(padx=10, pady=5, fill="x")
 
         send_message_button = tk.Button(chat_frame_second, text="Wyslij wiadomosc", command=self.send_message, bg="#e6a565", bd=1)
         send_message_button.pack(padx=5, pady=5, fill="x")
+        
+        return_button = tk.Button(chat_frame_second, text="Powrot", command=self.client.back_menu, bg="#e6a565", bd=1)
+        return_button.pack(padx=5, pady=5, fill="x")
+
         
         self.show_messages()
 

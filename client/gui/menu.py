@@ -2,7 +2,8 @@ from collections import UserList
 import dis
 from re import S
 import tkinter as tk
-from tkinter import messagebox
+from tkinter import ttk
+from tkinter import Scrollbar,messagebox
 import requests
 import datetime
 
@@ -25,19 +26,46 @@ class MenuInterface:
 
         self.root.geometry(f"{_width}x{_height}+{_posx}+{_posy}")
 
-        self.refresh_button = tk.Button(self.root, text="Odswiez", command=self.refresh, bg="#e6a565", bd=1)
-        self.refresh_button.grid(row=0, column=0, padx=10, pady=5)
         
-        self.logout_button = tk.Button(self.root, text="Wyloguj", command=self.logout, bg="#e6a565", bd=1)
+        self.button_frame = tk.Frame(self.root)
+        self.button_frame.grid(row=0, column=0)
+
+        _user = self.client.get_user()
+        name_label = tk.Label(self.button_frame, text=f'Imie: {_user["name"]}\n Nazwisko: {_user["surname"]}')
+        name_label.grid(row = 1, column=1)
+
+        self.refresh_button = tk.Button(self.button_frame, text="Odswiez", command=self.refresh, bg="#e6a565", bd=1)
+        self.refresh_button.grid(row=0, column=2, padx=10, pady=5)
+        
+        self.logout_button = tk.Button(self.button_frame, text="Wyloguj", command=self.logout, bg="#e6a565", bd=1)
         self.logout_button.grid(row=0, column=1, padx=10, pady=5)
 
-        self.users_frame = tk.Frame(self.root)
-        self.users_frame.grid(row=1, column=0)
+        self.users_frame = ttk.Frame(self.root)
         
+        self.canvas = tk.Canvas(self.users_frame)
+        self.scrollbar = ttk.Scrollbar(self.users_frame, orient="vertical", command=self.canvas.yview)
+        self.scrollable_frame = ttk.Frame(self.canvas)
+
+        self.scrollable_frame.bind(
+            "<Configure>",
+            lambda e: self.canvas.configure(
+                scrollregion=self.canvas.bbox("all")
+            )
+        )
+
+        self.canvas.create_window((0, 0), window=self.scrollable_frame, anchor="nw")
+
+        self.canvas.configure(yscrollcommand=self.scrollbar.set)
+        
+        self.users_frame.grid(row=1, column=0)
+        self.canvas.pack(side="left", fill="both", expand=True)
+        self.scrollbar.pack(side="right", fill="y")
+
+
         self.display_users()
 
     def display_users(self):
-        users_label = tk.Label(self.users_frame, text="Lista uzytkownikow:")
+        users_label = tk.Label(self.scrollable_frame, text="Lista uzytkownikow:")
         users_label.grid(row=0, column=0, padx=5, pady=5)
         _users_list = self.client.get_users()
         i = 0
@@ -47,7 +75,7 @@ class MenuInterface:
                 surname = user["surname"]
                 unread_messages_count = self.client.get_unread_messages_count(user_id)
                 user_label_text = f"{surname} ({unread_messages_count} nieprzeczytane)"
-                user_button = tk.Button(self.users_frame, text=user_label_text, command=lambda uid=user_id: self.open_chat(uid))
+                user_button = tk.Button(self.scrollable_frame, text=user_label_text, command=lambda uid=user_id: self.open_chat(uid))
                 user_button.grid(row=i + 1, column=0, padx=5, pady=5, sticky="nsew")
                 i += 1
 
