@@ -74,14 +74,20 @@ class Client:
             
     def chat_button(self, other_user_id):
         self.other_user_id = other_user_id
-        
+
         if self.other_user_id != -1:
             self.menu_interface.close_window()
-            
+
             self.chat_interface = ChatInterface(self)
             self.chat_interface.create_window()
             
-            self.threading() 
+            self.threading(self.chat_interface.get_scrollable_frame(), self.get_cur_user_id()) 
+            self.chat_interface.run()
+
+    def logout(self):
+        self.cur_user_id = -1
+        self.menu_interface.close_window()
+        self.login_interface.create_window()
 
     def get_other_user_id(self):
         return self.other_user_id
@@ -131,15 +137,15 @@ class Client:
             else:
                 return [] 
 
-    def threading(self): 
-        t1=Thread(target=self.work, args=()) 
+    def threading(self, scrollable_frame, cur_user_id): 
+        t1=Thread(target=self.work, args=[scrollable_frame, cur_user_id]) 
         t1.start() 
   
-    def work(self): 
+    def work(self, scrollable_frame, cur_user_id): 
         def on_message(ws, message):
             try:
                 message_json = json.loads(message)
-                self.chat_interface.show_message(message_json["message"], message_json["id_sender"])
+                self.chat_interface.show_message(scrollable_frame, message_json["message"], message_json["id_sender"])
                 print(f"Received message: {message}")
             except json.JSONDecodeError as e:
                 pass
@@ -154,7 +160,7 @@ class Client:
             print("### OPEN ###")
 
         websocket.enableTrace(True)
-        ws = websocket.WebSocketApp(f"ws://localhost:8000/ws/{self.cur_user_id}",
+        ws = websocket.WebSocketApp(f"ws://localhost:8000/ws/{cur_user_id}",
                                         on_message = on_message,
                                         on_error = on_error,
                                         on_close = on_close)

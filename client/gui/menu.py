@@ -25,8 +25,11 @@ class MenuInterface:
 
         self.root.geometry(f"{_width}x{_height}+{_posx}+{_posy}")
 
-        self.refresh_button = tk.Button(self.root, text="Odswiez", command=self.refresh, width=10, bg="#e6a565", bd=1)
+        self.refresh_button = tk.Button(self.root, text="Odswiez", command=self.refresh, bg="#e6a565", bd=1)
         self.refresh_button.grid(row=0, column=0, padx=10, pady=5)
+        
+        self.logout_button = tk.Button(self.root, text="Wyloguj", command=self.logout, bg="#e6a565", bd=1)
+        self.logout_button.grid(row=0, column=1, padx=10, pady=5)
 
         self.users_frame = tk.Frame(self.root)
         self.users_frame.grid(row=1, column=0)
@@ -53,6 +56,9 @@ class MenuInterface:
             if isinstance(widget, tk.Button):
                 widget.destroy()
         self.display_users()
+        
+    def logout(self):
+        self.client.logout()
         
     def open_chat(self, other_user_id):
         for widget in self.root.winfo_children():
