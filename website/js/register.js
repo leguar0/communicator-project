@@ -5,6 +5,9 @@ const surnameInput = document.querySelector("#surname-input");
 const usernameInput = document.querySelector("#username-input");
 const passwordInput = document.querySelector("#password-input");
 
+const registerStatus = document.querySelector("#register-status");
+
+
 document.querySelector("#register-btn").addEventListener("click",()=>{
 
     if(nameInput.value == "" || surnameInput.value == "" || usernameInput.value == "" || passwordInput.value == "")
@@ -21,11 +24,31 @@ document.querySelector("#register-btn").addEventListener("click",()=>{
         password: passwordInput.value
     });
     xhr.onload = () => {
-    if (xhr.readyState == 4 && xhr.status == 201) {
-        console.log(JSON.parse(xhr.responseText));
+    if (xhr.readyState == 4 && xhr.status == 200) {
+        let user = JSON.parse(xhr.responseText);
+        if(user.id == -1)
+            registerStatus.innerHTML = "Nie udało się zarejestrować";
+        else
+            window.open("login.html","_self");
     } else {
         console.log(`Error: ${xhr.status}`);
     }
     };
     xhr.send(body);
+});
+
+nameInput.addEventListener("focus", ()=>{
+    registerStatus.innerHTML = "";
+});
+
+surnameInput.addEventListener("focus", ()=>{
+    registerStatus.innerHTML = "";
+});
+
+usernameInput.addEventListener("focus", ()=>{
+    registerStatus.innerHTML = "";
+});
+
+passwordInput.addEventListener("focus", ()=>{
+    registerStatus.innerHTML = "";
 });

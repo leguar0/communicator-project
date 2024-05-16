@@ -2,6 +2,7 @@
 
 const usernameInput = document.querySelector("#login-input");
 const passwordInput = document.querySelector("#password-input");
+const loginStatus = document.querySelector("#login-status");
 
 document.querySelector("#login-btn").addEventListener("click",()=>{
 
@@ -18,9 +19,11 @@ document.querySelector("#login-btn").addEventListener("click",()=>{
     xhr.onload = () => {
     if (xhr.readyState == 4 && xhr.status == 200) {
         let user = JSON.parse(xhr.responseText);
+        if(user.id == -1)
+            loginStatus.innerHTML = "Nie udało się zalogować";
 
-        sessionStorage.setItem("user_id", user.id );
-        if(user.id != -1)
+        login(user.id, user.name, user.surname);
+        if(USER_ID != -1)
             window.open("index.html","_self");
 
     } else {
@@ -28,4 +31,12 @@ document.querySelector("#login-btn").addEventListener("click",()=>{
     }
     };
     xhr.send(body);
+});
+
+usernameInput.addEventListener("focus", ()=>{
+    loginStatus.innerHTML = "";
+});
+
+passwordInput.addEventListener("focus", ()=>{
+    loginStatus.innerHTML = "";
 });

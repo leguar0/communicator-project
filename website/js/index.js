@@ -1,6 +1,10 @@
 "use strict";
 
-const userId = sessionStorage.getItem("user_id");
+if(USER_ID == null || USER_ID == -1)
+    window.open("login.html","_self");
+const currentUserNamePlaceholderElement = document.querySelector("#current-user-name");
+if(currentUserNamePlaceholderElement != null && USER_FULLNAME != null)
+    currentUserNamePlaceholderElement.innerText = ` ${USER_FULLNAME}`;
 
 const usersHolder = document.querySelector("#online-users-holder");
 async function get_current_users(){
@@ -12,15 +16,15 @@ async function get_current_users(){
 
         for(let i =0;i<resp_data.length;++i){
 
-            if(resp_data[i].id == userId)
+            if(resp_data[i].id == USER_ID)
                 continue;
 
             let a = document.createElement("a");
-            a.href="chat.html?"+ resp_data[i].id;
+            a.href=`chat.html?id=${resp_data[i].id}&fullname=${resp_data[i].name} ${resp_data[i].surname}`;
             a.id = "user_id_" + resp_data[i].id;
 
             let div = document.createElement("div");
-            div.innerHTML = resp_data[i].name;
+            div.innerHTML = `${resp_data[i].name} ${resp_data[i].surname}`;
             div.classList.add("user-holder");
             
             a.appendChild(div)

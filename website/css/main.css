@@ -30,6 +30,7 @@ body{
     overflow-y: auto;
     overflow-x: hidden;
     height: 500px;
+    max-height: 45vh;
     display: flex;
     flex-direction: column-reverse;
   }
@@ -41,11 +42,12 @@ body{
     margin-bottom: 2px;
     border-radius: 10px;
     display: flex;
+    text-wrap: wrap;
+    overflow-wrap: anywhere;
     align-items: center;
     padding-left: 20px;
     background-color: rgb(216, 255, 255);
 }
-
 
 
 .msg-from{
