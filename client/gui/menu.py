@@ -8,13 +8,12 @@ import datetime
 
 class MenuInterface:
     def __init__(self, client):
+        self.client = client
+       
+    def create_window(self):
         self.root = tk.Tk()
         self.root.title("Komunikator")
-        self.client = client
-        self.create_window()
-        self.display_users()
 
-    def create_window(self):
         _width = 800
         _height = 600
     
@@ -31,6 +30,8 @@ class MenuInterface:
 
         self.users_frame = tk.Frame(self.root)
         self.users_frame.grid(row=1, column=0)
+        
+        self.display_users()
 
     def display_users(self):
         users_label = tk.Label(self.users_frame, text="Lista uzytkownikow:")
@@ -43,7 +44,7 @@ class MenuInterface:
                 surname = user["surname"]
                 unread_messages_count = self.client.get_unread_messages_count(user_id)
                 user_label_text = f"{surname} ({unread_messages_count} nieprzeczytane)"
-                user_button = tk.Button(self.users_frame, text=user_label_text)
+                user_button = tk.Button(self.users_frame, text=user_label_text, command=lambda uid=user_id: self.open_chat(uid))
                 user_button.grid(row=i + 1, column=0, padx=5, pady=5, sticky="nsew")
                 i += 1
 
@@ -52,10 +53,12 @@ class MenuInterface:
             if isinstance(widget, tk.Button):
                 widget.destroy()
         self.display_users()
-    
-    def run(self):
-        self.root.mainloop()
         
-    def open_chat(self):
+    def open_chat(self, other_user_id):
         for widget in self.root.winfo_children():
             widget.destroy()
+            
+        self.client.chat_button(other_user_id)
+        
+    def close_window(self):
+        self.root.destroy()

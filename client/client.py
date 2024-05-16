@@ -18,14 +18,15 @@ from gui.chat import ChatInterface
 class Client:
     def __init__(self):
         self.cur_user_id = -1
+        self.other_user_id = -1
         self.login_interface = None
         self.menu_interface = None
         self.register_interface = None
         self.chat_interface = None
     
-    def set_login_interface(self, login_interface):
+    def set_interfaces(self, login_interface):
         self.login_interface = login_interface
-
+        
     def login_button(self, username, password):
         try:
             user_json = {"id": 0, "username": username, "password": password}
@@ -39,10 +40,63 @@ class Client:
                     self.menu_interface = MenuInterface(self)
                     self.menu_interface.create_window()
                 else:
-                    self.login_interface.show_messagebox("ERROR", "Sprawdz login i haslo")    
+                    self.login_interface.show_messagebox("Blad", "Sprawdz login i haslo")    
         except Exception as e:
             print(e)
             
+    def login_rg_button(self):
+        self.login_interface.close_window()
+        self.register_interface = RegisterInterface(self)
+        self.register_interface.create_window()
+       
+    def back_login(self):
+        self.register_interface.close_window()
+        self.login_interface.create_window()
+        
+    def back_menu(self):
+        self.chat_interface.close_window()
+        self.menu_interface.create_window()
+
+    def register_button(self, name, surname, username, password):
+        try:
+            user_json = {"id": 0, "name": name, "surname": surname,"username": username, "password": password}
+            result = requests.post('http://127.0.0.1:8000/register_user', json=user_json)
+            if result.status_code == 200:
+                res = result.json()
+                if res["id"] != - 1:
+                    self.register_interface.show_messagebox("Sukces", "Udalo sie zarejestrowac uzytkownika")
+                    self.register_interface.close_window()
+                    self.back_login()
+            else:
+                self.register_interface.show_messagebox("Blad", "Nie udalo sie zarejestrowac uzytkownika.")
+        except Exception as e:
+            print(e)
+            
+    def chat_button(self, other_user_id):
+        self.other_user_id = other_user_id
+        
+        if self.other_user_id != -1:
+            self.menu_interface.close_window()
+            
+            self.chat_interface = ChatInterface(self)
+            self.chat_interface.create_window()
+            
+
+    def get_other_user_id(self):
+        return self.other_user_id
+
+    def get_cur_user_id(self):
+        return self.other_user_id
+
+    def get_name_surname(self):
+        users = self.get_users()
+        
+        for user in users:
+            if user["id"] == self.other_user_id:
+                _name_surname = user["name"] + " " + user["surname"]
+                return _name_surname
+
+
     def get_users(self):
         response = requests.get('http://127.0.0.1:8000/current_users')
         if response.status_code == 200:
@@ -61,18 +115,7 @@ class Client:
                 "id_sender": cur_user_id
             }
             self.chat_interface.show_message(self.chat_inerface.scrollable_frame, cur_user_id, message_json)
-            
-    def register_user(self, name, surname, username, password):
-        user_json = {"id": 0, "name": name, "surname": surname,"username": username, "password": password}
-        result = requests.post('http://127.0.0.1:8000/register_user', json=user_json)
-        if result.status_code == 200:
-            cur_user_id = result.json()["id"]
-            messagebox.showinfo("Sukces", f"Uzytkownik zarejestrowany pomyslnie. ID: {cur_user_id}")
-        
-            reg.destroy()  
-            login.login_window() 
-        else:
-            messagebox.showerror("Blad", "Nie udalo sie zarejestrowac uzytkownika.")
+           
 
     def get_unread_messages_count(self, user_id):
         response = requests.get(f'http://127.0.0.1:8000/count_unread_messages_from_user?id_sender={user_id}&id_receiver={self.cur_user_id}')
@@ -81,15 +124,16 @@ class Client:
         else:
             return 0
         
-    def get_messages(self, user_id):
-        response = requests.get(f"http://localhost:8000/get_messages?cur_user={self.cur_user_id}&from_user={user_id}")
-        if response.status_code == 200:
-            return response.json()
-        else:
-            return [] 
+    def get_messages(self):
+        if self.other_user_id != -1:    
+            response = requests.get(f"http://localhost:8000/get_messages?cur_user={self.cur_user_id}&from_user={self.other_user_id}")
+            if response.status_code == 200:
+                return response.json()
+            else:
+                return [] 
 
 if __name__ == "__main__":
     client = Client()
-    login_interface = LoginInterface(client.login_button)
-    client.set_login_interface(login_interface)
+    login_interface = LoginInterface(client)
+    client.set_interfaces(login_interface)
     login_interface.run()

@@ -4,13 +4,14 @@ from turtle import color
 from unittest import result
 
 class LoginInterface:
-    def __init__(self, button_callback):
-         self.root = tk.Tk()
-         self.root.title("Logowanie")
-         self.button_callback = button_callback
+    def __init__(self, client):
+         self.client = client
          self.create_window()
          
     def create_window(self):
+        self.root = tk.Tk()
+        self.root.title("Rejestracja")
+
         _width = 800
         _height = 600
 
@@ -35,7 +36,7 @@ class LoginInterface:
         login_button = tk.Button(self.root, text="Zaloguj", width=10, command=self.button_click, bg="#e6a565", bd=1)
         login_button.grid(row=5, column=1, sticky="nsew")
         
-        register_button = tk.Button(self.root, text="Zarejestruj", width=10, bg="#e6a565", bd=1)
+        register_button = tk.Button(self.root, text="Zarejestruj", width=10, command=self.button_register, bg="#e6a565", bd=1)
         register_button.grid(row=6, column=1, sticky="nsew")
 
         self.warning_label = tk.Label(self.root, text="Uzupelnij wszystkie pola", fg="red")
@@ -50,7 +51,10 @@ class LoginInterface:
             self.show_warning()
         else:
             self.hide_warning()
-            self.button_callback(_username, _password)
+            self.client.login_button(_username, _password)
+            
+    def button_register(self):
+        self.client.login_rg_button()
 
     def show_warning(self):
         self.warning_label.grid(row=7, column=1, sticky="nsew")
