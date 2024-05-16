@@ -7,6 +7,8 @@ from datetime import datetime
 from fastapi.middleware.cors import CORSMiddleware
 import os
 import json
+from Crypto.Hash import SHA256
+from Crypto.Random import get_random_bytes
 import sqlite3
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -18,7 +20,8 @@ def new_database_operations(cursor):
             name TEXT NOT NULL,
             surname TEXT NOT NULL,
             username TEXT NOT NULL,       
-            password TEXT NOT NULL       
+            password TEXT NOT NULL,
+            salt TEXT NOT NULL
         );''')
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS messages
@@ -115,7 +118,11 @@ async def register_user(user : User):
     cur.execute('SELECT * FROM users WHERE username = ?', [user.username])
     result = cur.fetchone()
     if result is None:
-        cur.execute('INSERT INTO users VALUES(NULL,?,?,?,?)', (user.name, user.surname, user.username, user.password))
+        
+        salt = get_random_bytes(16).hex()
+        h_user_password = SHA256.new((user.password+salt).encode("utf-8")).digest()
+        
+        cur.execute('INSERT INTO users VALUES(NULL,?,?,?,?,?)', (user.name, user.surname, user.username, h_user_password, salt))
         conn.commit()
         user.id = cur.lastrowid
         user.password = "" # Let's do not return password ... (tmp solution)
@@ -125,7 +132,16 @@ async def register_user(user : User):
 
 @app.post("/login")
 async def login_user(user : User):
-    cur.execute('SELECT id_user, name, surname, username FROM users WHERE username = ? AND password = ?', (user.username, user.password))
+    
+    cur.execute('SELECT salt FROM users WHERE username = ?', (user.username,))
+    result = cur.fetchone()
+    if result is None:
+        return { "id": -1}
+
+    salt = result[0]
+    h_user_password = SHA256.new((user.password+salt).encode("utf-8")).digest()
+
+    cur.execute('SELECT id_user, name, surname, username FROM users WHERE username = ? AND password = ?', (user.username, h_user_password))
     result = cur.fetchone()
     if result:
             user = {
