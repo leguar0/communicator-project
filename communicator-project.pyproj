@@ -4,7 +4,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>94b90ed4-a107-4de2-be17-aa68aa5b152d</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>./client/gui/login.py</StartupFile>
+    <StartupFile>./client/client.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
@@ -29,9 +29,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="client\client.py" />
-    <Compile Include="client\gui.py" />
     <Compile Include="client\gui\chat.py" />
-    <Compile Include="client\gui\inbox.py" />
     <Compile Include="client\gui\login.py" />
     <Compile Include="client\gui\menu.py" />
     <Compile Include="client\gui\register.py" />
