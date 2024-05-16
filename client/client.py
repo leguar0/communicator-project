@@ -81,12 +81,15 @@ class Client:
             self.chat_interface = ChatInterface(self)
             self.chat_interface.create_window()
             
+            self.threading()
+
+            
 
     def get_other_user_id(self):
         return self.other_user_id
 
     def get_cur_user_id(self):
-        return self.other_user_id
+        return self.cur_user_id
 
     def get_name_surname(self):
         users = self.get_users()
@@ -104,18 +107,16 @@ class Client:
         else:
             return []
 
-    def send_message(self, message, other_user_id):  
+    def send_message(self, message):  
         cur_user_id = self.cur_user_id
-        id_receiver = other_user_id
+        id_receiver = self.other_user_id
         if id_receiver != 0:
             message_json = {"id_sender": cur_user_id, "id_receiver": id_receiver, "message": message}
             requests.post('http://127.0.0.1:8000/send_message', json=message_json)
             message_json = {
                 "message": message,
                 "id_sender": cur_user_id
-            }
-            self.chat_interface.show_message(self.chat_inerface.scrollable_frame, cur_user_id, message_json)
-           
+            }           
 
     def get_unread_messages_count(self, user_id):
         response = requests.get(f'http://127.0.0.1:8000/count_unread_messages_from_user?id_sender={user_id}&id_receiver={self.cur_user_id}')
@@ -132,6 +133,36 @@ class Client:
             else:
                 return [] 
 
+    def threading(self): 
+        t1=Thread(target=self.work, args=()) 
+        t1.start() 
+  
+    def work(self): 
+        def on_message(ws, message):
+            try:
+                message_json = json.loads(message)
+                self.chat_interface.show_message(message_json["message"], message_json["id_sender"])
+                print(f"Received message: {message}")
+            except json.JSONDecodeError as e:
+                pass
+
+        def on_error(ws, error):
+            print(f"Error: {error}")
+
+        def on_close(ws):
+            print("### Closed ###")
+
+        def on_open(ws):
+            print("### OPEN ###")
+
+        websocket.enableTrace(True)
+        ws = websocket.WebSocketApp(f"ws://localhost:8000/ws/{self.cur_user_id}",
+                                        on_message = on_message,
+                                        on_error = on_error,
+                                        on_close = on_close)
+        ws.on_open = on_open
+        ws.run_forever()
+            
 if __name__ == "__main__":
     client = Client()
     login_interface = LoginInterface(client)

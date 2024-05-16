@@ -45,10 +45,10 @@ class RegisterInterface:
         self.password_entry = tk.Entry(self.root)
         self.password_entry.grid(row=3, column=1, padx=5, pady=5,sticky="nsew")
     
-        register_button = tk.Button(self.root, text="Zarejestruj", command=self.button_register_click, bg="#e6a565")
+        register_button = tk.Button(self.root, text="Zarejestruj", command=self.button_register_click, bg="#e6a565", bd=1)
         register_button.grid(row=5, column=0, columnspan=2, padx=10, pady=5, sticky="nsew")
     
-        return_button = tk.Button(self.root, text="Powrot do logowania", command=self.button_back_click, bg="#e6a565")
+        return_button = tk.Button(self.root, text="Powrot do logowania", command=self.button_back_click,  bg="#e6a565", bd=1)
         return_button.grid(row=6, column=0, columnspan=2, padx=10, pady=2, sticky="nsew")
         
         self.warning_label = tk.Label(self.root, text="Uzupelnij wszystkie pola", fg="red")

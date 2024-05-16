@@ -3,11 +3,7 @@ import tkinter as tk
 from tkinter import Scrollbar, messagebox
 from turtle import left, right
 from unittest import result
-import requests
-import websocket
-import json
 from tkinter import ttk
-from threading import *
 
 class ChatInterface:
     def __init__(self, client):
@@ -58,62 +54,36 @@ class ChatInterface:
         message_label = tk.Label(chat_frame_second, text="Tresc wiadomosci:")
         message_label.pack(padx=5, pady=5, anchor="w")
 
-        message_entry = tk.Entry(chat_frame_second)
-        message_entry.pack(padx=5, pady=5, fill="x")
+        self.message_entry = tk.Entry(chat_frame_second)
+        self.message_entry.pack(padx=5, pady=5, fill="x")
 
-        return_button = tk.Button(chat_frame_second, text="Powrot", command=self.client.back_menu, width=10,height=2,bg="red")
+        return_button = tk.Button(chat_frame_second, text="Powrot", command=self.client.back_menu, width=10, bg="#e6a565", bd=1)
         return_button.pack(padx=10, pady=5, fill="x")
 
-        send_message_button = tk.Button(chat_frame_second, text="Wyslij wiadomosc", command=lambda: send_message(message_entry,other_user_id,cur_user_id,scrollable_frame), state="active")
+        send_message_button = tk.Button(chat_frame_second, text="Wyslij wiadomosc", command=self.send_message, state="active", bg="#e6a565", bd=1)
         send_message_button.pack(padx=5, pady=5, fill="x")
-         
-        def threading(cur_user_id): 
-            t1=Thread(target=work, args=[cur_user_id]) 
-            t1.start() 
-  
-        def work(cur_user_id): 
-  
-            def on_message(ws, message):
-                try:
-                    message_json = json.loads(message)
-                    self.show_message(message_json)
-                    print(f"Received message: {message}")
-                except json.JSONDecodeError as e:
-                    pass
+        
+        self.show_messages()
 
-            def on_error(ws, error):
-                print(f"Error: {error}")
-
-            def on_close(ws):
-                print("### Closed ###")
-
-            def on_open(ws):
-                print("### OPEN ###")
-
-            websocket.enableTrace(True)
-            ws = websocket.WebSocketApp(f"ws://localhost:8000/ws/{cur_user_id}",
-                                        on_message = on_message,
-                                        on_error = on_error,
-                                        on_close = on_close)
-            ws.on_open = on_open
-            ws.run_forever()
-
-        threading(self.client.get_cur_user_id())
-    
-    def show_messages(self, cur_user_id,user_id):
-        messages = self.client.get_messages(cur_user_id,user_id)  
+    def show_messages(self):
+        messages = self.client.get_messages()  
         for message in messages:
-            self.show_message(message)
+            self.show_message(message["message"], message["id_sender"])
    
-    def show_message(self, message):
-        print(message)
-        message_frame = tk.Label(self.scrollable_frame, text=message["message"],width=25, wraplength=100)
-        if message["id_sender"] == self.client.get_other_user_id:
+    def show_message(self, message, _id):
+        message_frame = tk.Label(self.scrollable_frame, text=message, width=25, wraplength=100)
+        if _id == self.client.get_other_user_id():
             message_frame.config(bg="green")
-            message_frame.grid(column=1)
+            message_frame.grid(column=0)
         else:
             message_frame.config(bg="yellow")
-            message_frame.grid(column=0)
+            message_frame.grid(column=1)
+            
+    def send_message(self):
+        _message = self.message_entry.get()
+        
+        self.show_message(_message, self.client.get_cur_user_id())
+        self.client.send_message(_message)
             
     def close_window(self):
         self.root.destroy()
