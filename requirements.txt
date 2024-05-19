@@ -5,6 +5,7 @@ cffi==1.16.0
 charset-normalizer==3.3.2
 click==8.1.7
 colorama==0.4.6
+emoji==2.11.1
 fastapi==0.110.0
 gevent==24.2.1
 greenlet==3.0.3
