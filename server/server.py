@@ -157,11 +157,12 @@ connections: [int, WebSocket] = {}
 
 @app.post("/send_message")
 async def send_message(m: Message):
-    cur.execute('INSERT INTO messages VALUES(NULL,?,?,?,?,False)', (m.id_sender, m.id_receiver, m.message, datetime.now()))
-    conn.commit()
-    print(m.id_receiver)
+    is_connected = False
     if m.id_receiver in connections:
         await connections[m.id_receiver].send_text(m.json())
+        is_connected = True
+    cur.execute('INSERT INTO messages VALUES(NULL,?,?,?,?,?)', (m.id_sender, m.id_receiver, m.message, datetime.now(), is_connected))
+    conn.commit()
     
 @app.websocket("/ws/{user_id}")
 async def websocket_endpoint(websocket: WebSocket, user_id: int):
