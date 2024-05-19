@@ -82,7 +82,7 @@ async def get_unread_messages_from_user(cur_id_user, id_user):
 
 @app.get("/count_unread_messages_from_user")
 async def get_count_unread_messages_from_user(id_sender, id_receiver):
-    cur.execute('SELECT COUNT(*) as total_messages FROM messages INNER JOIN users ON users.id_user = messages.id_sender WHERE id_sender = ? AND id_receiver = ? AND is_read = 0', (id_sender, id_receiver))
+    cur.execute('SELECT COUNT(*) as total_messages FROM messages WHERE id_sender = ? AND id_receiver = ? AND is_read = 0', (id_sender, id_receiver))
     fetch = cur.fetchone()
     return fetch[0]
 
@@ -98,10 +98,6 @@ async def get_unread_messages(id_user):
 @app.get("/get_messages")
 async def get_messages(cur_user, from_user):
     res = cur.execute('SELECT message, date_time, id_sender, id_receiver FROM messages WHERE (id_sender = ? AND id_receiver=?) OR (id_sender=? AND id_receiver = ?)', [cur_user, from_user, from_user, cur_user])
-    #if(len(fetch) > 0):
-        #cur.execute('UPDATE messages SET is_read = 1 WHERE id_receiver = ? AND is_read = 0', [id_user])
-        #conn.commit()
-    #print(fetch)
     messages = []
     for row in res.fetchall():
         message = {
@@ -111,6 +107,9 @@ async def get_messages(cur_user, from_user):
                 "id_receiver": row[3]
         }
         messages.append(message)
+    if(len(message) > 0):
+        cur.execute('UPDATE messages SET is_read = 1 WHERE id_receiver = ? AND is_read = 0', [cur_user])
+        conn.commit()
     return messages
 
 @app.post("/register_user")
@@ -158,11 +157,12 @@ connections: [int, WebSocket] = {}
 
 @app.post("/send_message")
 async def send_message(m: Message):
-    cur.execute('INSERT INTO messages VALUES(NULL,?,?,?,?,False)', (m.id_sender, m.id_receiver, m.message, datetime.now()))
-    conn.commit()
-    print(m.id_receiver)
+    is_connected = False
     if m.id_receiver in connections:
         await connections[m.id_receiver].send_text(m.json())
+        is_connected = True
+    cur.execute('INSERT INTO messages VALUES(NULL,?,?,?,?,?)', (m.id_sender, m.id_receiver, m.message, datetime.now(), is_connected))
+    conn.commit()
     
 @app.websocket("/ws/{user_id}")
 async def websocket_endpoint(websocket: WebSocket, user_id: int):
