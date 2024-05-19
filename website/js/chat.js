@@ -66,6 +66,6 @@ function displayMessage(senderId, msg) {
     const messageElement = document.createElement("div");
     messageElement.classList.add("msg-holder");
     messageElement.classList.add(userId == senderId ? "msg-to" : "msg-from");
-    messageElement.textContent = msg;
+    messageElement.innerHTML = emojione.toImage(msg);;
     chatMessages.appendChild(messageElement);
 }
