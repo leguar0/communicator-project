@@ -12,8 +12,11 @@ const searchParams = new URLSearchParams(location.search.substring(1));
 const receiverId = searchParams.get("id");
 const receiverFullname = searchParams.get("fullname");
 
+
 if(receiverFullname != null)
     document.querySelector("#receiver-fullname").innerText = receiverFullname;
+
+const messageInput = document.querySelector("#message-input");
 
 async function get_msgs(){
     let url = `http://localhost:8000/get_messages?cur_user=${userId}&from_user=${receiverId}`;
@@ -45,7 +48,6 @@ websocket.onclose = function(event) {
 };
 
 function sendMessage() {
-    const messageInput = document.getElementById("message-input");
     const message = messageInput.value.trim();
     if (message !== "") {
 
@@ -69,3 +71,14 @@ function displayMessage(senderId, msg) {
     messageElement.innerHTML = emojione.toImage(msg);;
     chatMessages.appendChild(messageElement);
 }
+
+document.querySelector("#send-btn").addEventListener("click",()=>{
+    sendMessage();
+});
+
+messageInput.addEventListener("keypress", (e)=>{
+    if (e.key === "Enter") {
+      e.preventDefault();
+      sendMessage();
+    }
+  });
