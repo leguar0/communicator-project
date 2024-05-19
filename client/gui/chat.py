@@ -5,6 +5,7 @@ from tkinter import Scrollbar, messagebox
 from turtle import left, right
 from unittest import result
 from tkinter import ttk
+import emoji
 
 class ChatInterface:
     def __init__(self, client):
@@ -14,8 +15,8 @@ class ChatInterface:
         self.root = tk.Tk()
         self.root.title(f'Chat: {self.client.get_name_surname()}')
     
-        chat_frame_main = ttk.Frame(self.root,height=450,width=400 )    
-        self.canvas = tk.Canvas(chat_frame_main)
+        chat_frame_main = ttk.Frame(self.root,height=550,width=750)    
+        self.canvas = tk.Canvas(chat_frame_main,height=450,width=450)
         self.scrollbar = ttk.Scrollbar(chat_frame_main, orient="vertical", command=self.canvas.yview)
         self.scrollable_frame = ttk.Frame(self.canvas)
 
@@ -54,7 +55,7 @@ class ChatInterface:
         message_label = tk.Label(chat_frame_second, text="Tresc wiadomosci:")
         message_label.pack(padx=5, pady=5, anchor="w")
         
-        self.message_entry = tk.Entry(chat_frame_second)
+        self.message_entry = tk.Entry(chat_frame_second, width=50)
         self.message_entry.pack(padx=5, pady=5, fill="x", expand=True)
 
 
@@ -76,7 +77,8 @@ class ChatInterface:
             self.show_message(self.scrollable_frame, message["message"], message["id_sender"])
    
     def show_message(self, scrollable_frame, message, _id):
-        message_frame = tk.Label(scrollable_frame, text=message, width=25, wraplength=100)
+        message = emoji.emojize(message, language='alias')
+        message_frame = tk.Label(scrollable_frame, text=message, width=25, wraplength=200, font=("Arial", 12))
         if _id == self.client.get_other_user_id():
             message_frame.config(bg="green")
             message_frame.grid(column=0)
@@ -94,7 +96,7 @@ class ChatInterface:
         self.client.send_message(_message)
         
     def scroll_to_bottom(self):
-        self.root.update_idletasks()  # Update the idle tasks
+        self.root.update_idletasks() 
         self.root.after(100, self.scrollbar.set, 2, 2)
         self.root.after(100, self.canvas.yview_moveto, 1)
 
