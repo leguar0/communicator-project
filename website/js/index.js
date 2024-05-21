@@ -27,7 +27,7 @@ async function get_current_users(){
             div_container.classList.add("user-holder");
             
             let div_name = document.createElement("div");
-            div_name.innerHTML = `${resp_data[i].name} ${resp_data[i].surname}`;
+            div_name.innerHTML = `${resp_data[i].name} ${resp_data[i].surname}#${resp_data[i].id}`;
             div_container.appendChild(div_name);
 
             let div_msg_count = document.createElement("div");
