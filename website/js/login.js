@@ -17,18 +17,22 @@ document.querySelector("#login-btn").addEventListener("click",()=>{
         password: passwordInput.value
     });
     xhr.onload = () => {
-    if (xhr.readyState == 4 && xhr.status == 200) {
-        let user = JSON.parse(xhr.responseText);
-        if(user.id == -1)
-            loginStatus.innerHTML = "Nie udało się zalogować";
+        if (xhr.readyState == 4 && xhr.status == 200) {
+            let user = JSON.parse(xhr.responseText);
+            if(user.id == -1){
+                loginStatus.innerHTML = "Nie udało się zalogować";
+                return;
+            }
 
-        login(user.id, user.name, user.surname);
-        if(USER_ID != -1)
-            window.open("index.html","_self");
+            login(user.id, user.name, user.surname);
+            if(sessionStorage.getItem("user_id") != null)
+                window.open("index.html","_self");
+            else
+                loginStatus.innerHTML = "Nie udało się zalogować";
 
-    } else {
-        console.log(`Error: ${xhr.status}`);
-    }
+        } else {
+            console.log(`Error: ${xhr.status}`);
+        }
     };
     xhr.send(body);
 });
