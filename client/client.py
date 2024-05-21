@@ -71,6 +71,8 @@ class Client:
                     self.register_interface.show_messagebox("Sukces", "Udalo sie zarejestrowac uzytkownika")
                     self.register_interface.close_window()
                     self.back_login()
+                else:
+                    self.register_interface.show_messagebox("Blad", "Uzupelnij poprawnie wszystkie pola")
             else:
                 self.register_interface.show_messagebox("Blad", "Nie udalo sie zarejestrowac uzytkownika.")
         except Exception as e:
