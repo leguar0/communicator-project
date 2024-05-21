@@ -116,7 +116,7 @@ async def get_messages(cur_user, from_user):
 async def register_user(user : User):
     cur.execute('SELECT * FROM users WHERE username = ?', [user.username])
     result = cur.fetchone()
-    if result is None:
+    if result is None and len(user.name) >= 3 and len(user.surname) >= 3 and len(user.username) >= 3 and len(user.password) >= 3:
         
         salt = get_random_bytes(16).hex()
         h_user_password = SHA256.new((user.password+salt).encode("utf-8")).digest()
