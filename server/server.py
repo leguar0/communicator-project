@@ -108,7 +108,7 @@ async def get_messages(cur_user, from_user):
         }
         messages.append(message)
     if(len(message) > 0):
-        cur.execute('UPDATE messages SET is_read = 1 WHERE id_receiver = ? AND is_read = 0', [cur_user])
+        cur.execute('UPDATE messages SET is_read = 1 WHERE id_receiver = ? AND id_sender = ? AND is_read = 0', [cur_user, from_user])
         conn.commit()
     return messages
 
