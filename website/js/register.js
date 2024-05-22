@@ -12,6 +12,11 @@ document.querySelector("#register-btn").addEventListener("click",()=>{
 
     if(nameInput.value == "" || surnameInput.value == "" || usernameInput.value == "" || passwordInput.value == "")
         return;
+
+    if(nameInput.value.length < 3 || surnameInput.value < 3 || usernameInput.value < 3 || passwordInput.value < 3){
+        registerStatus.innerHTML = "Name, surname, username and password have to have at least 3 characters.";
+        return;
+    }
     
     const xhr = new XMLHttpRequest();
     xhr.open("POST", "http://localhost:8000/register_user");
@@ -27,7 +32,7 @@ document.querySelector("#register-btn").addEventListener("click",()=>{
     if (xhr.readyState == 4 && xhr.status == 200) {
         let user = JSON.parse(xhr.responseText);
         if(user.id == -1)
-            registerStatus.innerHTML = "Nie udało się zarejestrować";
+            registerStatus.innerHTML = "Sorry, we couldn't register you.";
         else
             window.open("login.html","_self");
     } else {
