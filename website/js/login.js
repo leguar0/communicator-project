@@ -3,8 +3,9 @@
 const usernameInput = document.querySelector("#login-input");
 const passwordInput = document.querySelector("#password-input");
 const loginStatus = document.querySelector("#login-status");
+const loginBtn = document.querySelector("#login-btn");
 
-document.querySelector("#login-btn").addEventListener("click",()=>{
+loginBtn.addEventListener("click",()=>{
 
     if(usernameInput.value == "" || passwordInput.value =="") return;
 
@@ -43,4 +44,18 @@ usernameInput.addEventListener("focus", ()=>{
 
 passwordInput.addEventListener("focus", ()=>{
     loginStatus.innerHTML = "";
+});
+
+usernameInput.addEventListener("keypress", (e)=>{
+    if (e.key === "Enter") {
+      e.preventDefault();
+      loginBtn.click();
+    }
+});
+
+passwordInput.addEventListener("keypress", (e)=>{
+    if (e.key === "Enter") {
+      e.preventDefault();
+      loginBtn.click();
+    }
 });
