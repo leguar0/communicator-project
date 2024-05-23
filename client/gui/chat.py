@@ -58,6 +58,8 @@ class ChatInterface:
         self.message_entry = tk.Entry(chat_frame_second, width=50)
         self.message_entry.pack(padx=5, pady=5, fill="x", expand=True)
 
+        self.message_entry.bind("<Return>", self.send_message_with_event)
+
 
         send_message_button = tk.Button(chat_frame_second, text="Wyslij wiadomosc", command=self.send_message, bg="#e6a565", bd=1)
         send_message_button.pack(padx=5, pady=5, fill="x")
@@ -100,6 +102,8 @@ class ChatInterface:
         self.root.after(100, self.scrollbar.set, 2, 2)
         self.root.after(100, self.canvas.yview_moveto, 1)
 
+    def send_message_with_event(self, event):
+        self.send_message()
 
     def close_window(self):
         self.root.destroy()
