@@ -31,7 +31,7 @@ async function get_msgs(){
 }
 get_msgs();
 
-const websocket = new WebSocket(`ws://localhost:8000/ws/${userId}`);
+const websocket = new WebSocket(`ws://localhost:8000/ws/${userId}/${receiverId}`);
 
 websocket.onopen = function(event) {
     console.log("WebSocket connection established.");
