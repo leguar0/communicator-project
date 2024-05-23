@@ -15,8 +15,8 @@ from gui.register import RegisterInterface
 from gui.menu import MenuInterface
 from gui.chat import ChatInterface
 
-adress_ip = "213.130.147.244"
-#adress_ip = "127.0.0.1"
+#adress_ip = "213.130.147.244"
+adress_ip = "127.0.0.1"
 
 class Client:
     def __init__(self):
@@ -127,11 +127,7 @@ class Client:
         id_receiver = self.other_user_id
         if id_receiver != 0:
             message_json = {"id_sender": cur_user_id, "id_receiver": id_receiver, "message": message}
-            requests.post(f'http://{adress_ip}:8000/send_message', json=message_json)
-            message_json = {
-                "message": message,
-                "id_sender": cur_user_id
-            }           
+            self.ws.send_text(json.dumps(message_json))        
 
     def get_unread_messages_count(self, user_id):
         response = requests.get(f'http://{adress_ip}:8000/count_unread_messages_from_user?id_sender={user_id}&id_receiver={self.cur_user_id}')

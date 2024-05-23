@@ -155,8 +155,7 @@ async def login_user(user : User):
 
 connections = {}
 
-@app.post("/send_message")
-async def send_message(m: Message):
+async def send_message(m: Message, wsSender: WebSocket):
     is_connected = False
     if m.id_receiver in connections:
         for ws in connections[m.id_receiver]:
@@ -164,7 +163,8 @@ async def send_message(m: Message):
         is_connected = True
         
     for ws in connections[m.id_sender]:
-        await ws.send_text(m.json())
+        if ws != wsSender:
+            await ws.send_text(m.json())
     cur.execute('INSERT INTO messages VALUES(NULL,?,?,?,?,?)', (m.id_sender, m.id_receiver, m.message, datetime.now(), is_connected))
     conn.commit()
     
@@ -178,7 +178,7 @@ async def websocket_endpoint(websocket: WebSocket, user_id: int):
         while True:
             data = await websocket.receive_text()
             m = Message.parse_obj(json.loads(data))
-            await send_message(m)
+            await send_message(m, websocket)
     except WebSocketDisconnect:
         connections[user_id].remove(websocket)
         if not connections[user_id]:

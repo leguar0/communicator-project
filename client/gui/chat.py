@@ -94,7 +94,7 @@ class ChatInterface:
         _message = self.message_entry.get()
         if len(_message) > 0:
             self.message_entry.delete('0', 'end')
-    #        self.show_message(self.scrollable_frame, _message, self.client.get_cur_user_id())
+            self.show_message(self.scrollable_frame, _message, self.client.get_cur_user_id())
             self.client.send_message(_message)
         
     def scroll_to_bottom(self):
