@@ -60,13 +60,13 @@ class ChatInterface:
 
         self.message_entry.bind("<Return>", self.send_message_with_event)
 
-
         send_message_button = tk.Button(chat_frame_second, text="Wyslij wiadomosc", command=self.send_message, bg="#e6a565", bd=1)
         send_message_button.pack(padx=5, pady=5, fill="x")
         
         return_button = tk.Button(chat_frame_second, text="Powrot", command=self.client.back_menu, bg="#e6a565", bd=1)
         return_button.pack(padx=5, pady=5, fill="x")
 
+        self.root.protocol("WM_DELETE_WINDOW", self.client.back_menu)
         
         self.show_messages()
 
@@ -94,7 +94,7 @@ class ChatInterface:
         _message = self.message_entry.get()
         self.message_entry.delete('0', 'end')
 
-        self.show_message(self.scrollable_frame, _message, self.client.get_cur_user_id())
+#        self.show_message(self.scrollable_frame, _message, self.client.get_cur_user_id())
         self.client.send_message(_message)
         
     def scroll_to_bottom(self):
