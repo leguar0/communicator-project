@@ -31,7 +31,7 @@ class Client:
     def login_button(self, username, password):
         try:
             user_json = {"id": 0, "username": username, "password": password}
-            result = requests.post('http://213.130.147:244:8000/login', json=user_json)
+            result = requests.post('http://213.130.147.244:8000/login', json=user_json)
         
             if result.status_code == 200:
                 res = result.json()
@@ -64,7 +64,7 @@ class Client:
     def register_button(self, name, surname, username, password):
         try:
             user_json = {"id": 0, "name": name, "surname": surname,"username": username, "password": password}
-            result = requests.post('http://213.130.147:244:8000/register_user', json=user_json)
+            result = requests.post('http://213.130.147.244:8000/register_user', json=user_json)
             if result.status_code == 200:
                 res = result.json()
                 if res["id"] != - 1:
@@ -113,7 +113,7 @@ class Client:
         return self.user
 
     def get_users(self):
-        response = requests.get('http://213.130.147:244:8000/current_users')
+        response = requests.get('http://213.130.147.244:8000/current_users')
         if response.status_code == 200:
             return response.json()
         else:
@@ -124,14 +124,14 @@ class Client:
         id_receiver = self.other_user_id
         if id_receiver != 0:
             message_json = {"id_sender": cur_user_id, "id_receiver": id_receiver, "message": message}
-            requests.post('http://213.130.147:244:8000/send_message', json=message_json)
+            requests.post('http://213.130.147.244:8000/send_message', json=message_json)
             message_json = {
                 "message": message,
                 "id_sender": cur_user_id
             }           
 
     def get_unread_messages_count(self, user_id):
-        response = requests.get(f'http://213.130.147:244:8000/count_unread_messages_from_user?id_sender={user_id}&id_receiver={self.cur_user_id}')
+        response = requests.get(f'http://213.130.147.244:8000/count_unread_messages_from_user?id_sender={user_id}&id_receiver={self.cur_user_id}')
         if response.status_code == 200:
             return response.json()
         else:
@@ -139,7 +139,7 @@ class Client:
         
     def get_messages(self):
         if self.other_user_id != -1:    
-            response = requests.get(f"http://213.130.147:244:8000/get_messages?cur_user={self.cur_user_id}&from_user={self.other_user_id}")
+            response = requests.get(f"http://213.130.147.244:8000/get_messages?cur_user={self.cur_user_id}&from_user={self.other_user_id}")
             if response.status_code == 200:
                 return response.json()
             else:
@@ -168,7 +168,7 @@ class Client:
             print("### OPEN ###")
 
         websocket.enableTrace(True)
-        self.ws = websocket.WebSocketApp(f"ws://213.130.147:244:8000/ws/{cur_user_id}",
+        self.ws = websocket.WebSocketApp(f"ws://213.130.147.244:8000/ws/{cur_user_id}",
                                         on_message = on_message,
                                         on_error = on_error,
                                         on_close = on_close)
