@@ -14,7 +14,7 @@ from gui.login import LoginInterface
 from gui.register import RegisterInterface
 from gui.menu import MenuInterface
 from gui.chat import ChatInterface
-
+#test
 class Client:
     def __init__(self):
         self.cur_user_id = -1
