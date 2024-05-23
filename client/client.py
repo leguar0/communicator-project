@@ -15,7 +15,7 @@ from gui.register import RegisterInterface
 from gui.menu import MenuInterface
 from gui.chat import ChatInterface
 
-adress_ip = "127.0.0.1"
+adress_ip = "213.130.147.244"
 
 class Client:
     def __init__(self):
