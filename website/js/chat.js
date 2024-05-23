@@ -39,7 +39,6 @@ websocket.onopen = function(event) {
 
 websocket.onmessage = function(event) {
     const m = JSON.parse(event.data);
-    if(m.id_sender != receiverId) return;
     displayMessage(m.id_sender, m.message);
 };
 
@@ -59,7 +58,6 @@ function sendMessage() {
 
         websocket.send(JSON.stringify(data));
         messageInput.value = "";
-        displayMessage(userId, message);
     }
 }
 
