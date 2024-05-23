@@ -145,10 +145,10 @@ class Client:
                 return [] 
 
     def threading(self, scrollable_frame, cur_user_id): 
-        t1=threading.Thread(target=self.work, args=[scrollable_frame, cur_user_id]) 
+        t1=threading.Thread(target=self.work, args=[scrollable_frame, cur_user_id, self.other_user_id]) 
         t1.start() 
       
-    def work(self, scrollable_frame, cur_user_id): 
+    def work(self, scrollable_frame, cur_user_id, other_user_id): 
         def on_message(ws, message):
             try:
                 message_json = json.loads(message)
@@ -167,7 +167,7 @@ class Client:
             print("### OPEN ###")
 
         websocket.enableTrace(True)
-        self.ws = websocket.WebSocketApp(f"ws://{adress_ip}:8000/ws/{cur_user_id}",
+        self.ws = websocket.WebSocketApp(f"ws://{adress_ip}:8000/ws/{cur_user_id}/{other_user_id}",
                                         on_message = on_message,
                                         on_error = on_error,
                                         on_close = on_close)

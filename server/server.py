@@ -158,29 +158,30 @@ connections = {}
 async def send_message(m: Message, wsSender: WebSocket):
     is_connected = False
     if m.id_receiver in connections:
-        for ws in connections[m.id_receiver]:
-            await ws.send_text(m.json())
-        is_connected = True
+        for id_receiver, ws in connections[m.id_receiver]:
+            if id_receiver == m.id_sender:
+                await ws.send_text(m.json())
+                is_connected = True
         
-    for ws in connections[m.id_sender]:
-        if ws != wsSender:
+    for id_receiver, ws in connections[m.id_sender]:
+        if (id_receiver == m.id_receiver or id_receiver==m.id_sender) and ws != wsSender:
             await ws.send_text(m.json())
     cur.execute('INSERT INTO messages VALUES(NULL,?,?,?,?,?)', (m.id_sender, m.id_receiver, m.message, datetime.now(), is_connected))
     conn.commit()
     
-@app.websocket("/ws/{user_id}")
-async def websocket_endpoint(websocket: WebSocket, user_id: int):
+@app.websocket("/ws/{user_id}/{id_receiver}")
+async def websocket_endpoint(websocket: WebSocket, user_id: int, id_receiver: int):
     await websocket.accept()
     if user_id not in connections:
         connections[user_id] = []
-    connections[user_id].append(websocket)
+    connections[user_id].append((id_receiver, websocket))
     try:
         while True:
             data = await websocket.receive_text()
             m = Message.parse_obj(json.loads(data))
             await send_message(m, websocket)
     except WebSocketDisconnect:
-        connections[user_id].remove(websocket)
+        connections[user_id].remove((id_receiver, websocket))
         if not connections[user_id]:
             del connections[user_id]
 
