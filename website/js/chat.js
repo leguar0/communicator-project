@@ -58,6 +58,7 @@ function sendMessage() {
 
         websocket.send(JSON.stringify(data));
         messageInput.value = "";
+        displayMessage(userId, message);
     }
 }
 
