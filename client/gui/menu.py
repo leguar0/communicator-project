@@ -73,8 +73,10 @@ class MenuInterface:
             user_id = user["id"]
             if user_id != self.client.cur_user_id:
                 surname = user["surname"]
+                name = user["name"]
+                id = user["id"]
                 unread_messages_count = self.client.get_unread_messages_count(user_id)
-                user_label_text = f"{surname} ({unread_messages_count} nieprzeczytane)"
+                user_label_text = f" {name} {surname}#{id} ({unread_messages_count} nieprzeczytane)"
                 user_button = tk.Button(self.scrollable_frame, text=user_label_text, command=lambda uid=user_id: self.open_chat(uid))
                 user_button.grid(row=i + 1, column=0, padx=5, pady=5, sticky="nsew")
                 i += 1
